@@ -5,7 +5,12 @@ use rocket::{
     Build, Rocket,
 };
 
+mod auth;
 mod config;
+mod database;
+mod errors;
+mod models;
+mod routes;
 
 #[catch(404)]
 fn not_found() -> Value {
@@ -24,7 +29,14 @@ pub fn server() -> Rocket<Build> {
     // rocket 配置
     let figment = config::rocket_config(&conf);
     rocket::custom(figment)
-        .mount("/api/v1", routes![])
+        .mount(
+            "/api/v1",
+            routes![
+                // routes::users::post_users_login,
+            ],
+        )
+        // .attach(database::Db::fairing())
+        // .attach(cors_fairing())
         .attach(config::AppState::manage())
         .register("/", catchers![not_found])
 }
