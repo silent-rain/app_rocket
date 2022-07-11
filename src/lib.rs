@@ -1,3 +1,7 @@
+// 用于引入 diesel 中的宏 
+#[macro_use]
+extern crate diesel;
+
 #[macro_use]
 extern crate rocket;
 use rocket::{
@@ -9,6 +13,7 @@ mod auth;
 mod config;
 mod database;
 mod errors;
+mod schema;
 mod models;
 mod routes;
 
