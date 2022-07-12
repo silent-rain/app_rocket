@@ -1,4 +1,4 @@
-mod user;
+pub mod user;
 
 use diesel::mysql::MysqlConnection;
 use r2d2;
@@ -12,7 +12,7 @@ use std::ops::Deref;
 
 pub type Pool = r2d2::Pool<ConnectionManager<MysqlConnection>>;
 
-pub fn init_pool(db_url: String) -> Pool {
+pub fn init_pool(db_url: &String) -> Pool {
     let manager = ConnectionManager::<MysqlConnection>::new(db_url);
     r2d2::Pool::new(manager).expect("db pool failure")
 }

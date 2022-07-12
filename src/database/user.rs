@@ -7,12 +7,17 @@ use crate::models::user::User;
 use crate::schema::user;
 use crate::schema::user::dsl::user as all_user;
 
-#[derive(Serialize, Deserialize, Insertable)]
+#[derive(Debug, Serialize, Deserialize, Insertable)]
 #[table_name = "user"]
 pub struct NewUser {
     pub name: String,
-    pub password: String,
+    pub gender: bool,
+    pub age: i32,
     pub phone: String,
+    pub password: String,
+    pub status: bool,
+    pub created: String,
+    pub updated: String,
 }
 
 // decode request data

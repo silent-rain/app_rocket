@@ -1,4 +1,4 @@
-// 用于引入 diesel 中的宏 
+// 用于引入 diesel 中的宏
 #[macro_use]
 extern crate diesel;
 
@@ -13,9 +13,9 @@ mod auth;
 mod config;
 mod database;
 mod errors;
-mod schema;
 mod models;
 mod routes;
+mod schema;
 
 #[catch(404)]
 fn not_found() -> Value {
@@ -31,16 +31,26 @@ pub fn server() -> Rocket<Build> {
     let conf = config::load_config("./app.yaml")
         .unwrap_or_else(|err| panic!("配置初始化失败! err:{:?}", err));
 
+    // 数据库初始化
+    let database_url = conf.mysql.dsn();
+    println!("=============={}", database_url);
+    let pool = database::init_pool(&database_url);
+
     // rocket 配置
     let figment = config::rocket_config(&conf);
     rocket::custom(figment)
         .mount(
             "/api/v1",
             routes![
-                // routes::users::post_users_login,
+                routes::user::get_all,
+                routes::user::delete_user,
+                routes::user::update_first_name,
+                routes::user::updateall,
+                routes::user::new_user,
+                routes::user::find_user,
             ],
         )
-        // .attach(database::Db::fairing())
+        .manage(pool)
         // .attach(cors_fairing())
         .attach(config::AppState::manage())
         .register("/", catchers![not_found])

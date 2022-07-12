@@ -55,6 +55,16 @@ pub struct Mysql {
     pub timeout_seconds: u64, // 连接超时时间单位秒
 }
 
+impl Mysql {
+    // 获取数据库 url
+    pub fn dsn(&self) -> String {
+        format!(
+            "mysql://{}:{}@{}:{}/{}",
+            self.user, self.password, self.host, self.port, self.db_name
+        )
+    }
+}
+
 /// Sqlite3 数据库配置 结构
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Sqlite {
