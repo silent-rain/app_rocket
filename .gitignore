@@ -1,2 +1,10 @@
+# rust
 /target
+
+# nodejs
+/web/node_modules
+
+# sql
 migrations
+
+# log
