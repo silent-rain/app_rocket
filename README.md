@@ -1,7 +1,39 @@
 # app rocket
+使用 rust 语言基于 rocket 框架搭建的一个静态 WEB 服务, 并将资源文件内嵌至二进制文件中。
 
-# 功能列表
-- [] 全局配置
+## 功能列表
+- [ ] 全局配置
+- [ ] mysql 数据库, 支持简单的增删改查
+- [ ] rust-embed, 内嵌静态web页面访问/内嵌静态资源文件
+
+
+## 项目运行
+- 前端
+```shell
+# 安装依赖
+yarn install
+
+# 编译
+yarn build
+
+# 运行前端
+yarn run dev
+```
+- 后端
+```shell
+# debug 模式运行
+cargo run
+
+# debug 模式编译
+cargo build
+
+# release 模式编译
+cargo run --release
+
+# release 模式编译
+cargo build --release
+```
+
 
 ## 数据库初始化
 - 创建数据库
@@ -9,8 +41,6 @@
 ```mysql
 CREATE DATABASE  `rocket` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
-
-
 
 
 ## diesel 使用
@@ -81,4 +111,4 @@ DROP TABLE user;
 - [vue3-admin-plus](https://github.com/jzfai/vue3-admin-plus)
 - [RealWorld](https://github.com/gothinkster/realworld)
 - [rocket+diesel+mysql学习](https://www.jianshu.com/p/95452dbe343b)
-
+- [rust-embed](https://github.com/pyrossh/rust-embed)
