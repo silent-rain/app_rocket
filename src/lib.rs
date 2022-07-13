@@ -33,7 +33,6 @@ pub fn server() -> Rocket<Build> {
 
     // 数据库初始化
     let database_url = conf.mysql.dsn();
-    println!("=============={}", database_url);
     let pool = database::init_pool(&database_url);
 
     // rocket 配置
@@ -48,6 +47,15 @@ pub fn server() -> Rocket<Build> {
                 routes::user::updateall,
                 routes::user::new_user,
                 routes::user::find_user,
+                routes::asset::index,
+                routes::asset::serve_embedded_file,
+            ],
+        )
+        .mount(
+            "/",
+            routes![
+                routes::asset::index,
+                routes::asset::serve_embedded_file,
             ],
         )
         .manage(pool)

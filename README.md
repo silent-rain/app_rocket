@@ -77,3 +77,8 @@ DROP TABLE user;
 - schema migration
 
 
+## 项目引用
+- [vue3-admin-plus](https://github.com/jzfai/vue3-admin-plus)
+- [RealWorld](https://github.com/gothinkster/realworld)
+- [rocket+diesel+mysql学习](https://www.jianshu.com/p/95452dbe343b)
+
