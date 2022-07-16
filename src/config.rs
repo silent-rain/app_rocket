@@ -1,20 +1,22 @@
 /*!配置文件
 */
+use once_cell::sync::OnceCell;
 use rocket::fairing::AdHoc;
 use rocket::figment::Figment;
 use rocket::Config;
 use serde::{Deserialize, Serialize};
 use serde_yaml;
+
+use std::collections::HashMap;
 use std::error;
 use std::fs::read_to_string;
+use std::sync::Arc;
 
 /// js toISOString() in test suit can't handle chrono's default precision
 pub const DATE_FORMAT: &'static str = "%Y-%m-%dT%H:%M:%S%.3fZ";
 
-pub const TOKEN_PREFIX: &'static str = "Token ";
-
-/// Debug only secret for JWT encoding & decoding.
-const SECRET: &'static str = "8Xui8SN4mI+7egV/9dlfYYLGQJeEx4+DwmSQLwDVXJg=";
+// 全局配置对象
+static GLOBAL_CONFIG: OnceCell<Arc<AppConfig>> = OnceCell::new();
 
 /// 初始化, 解析配置文件
 /// # Examples
@@ -23,10 +25,28 @@ const SECRET: &'static str = "8Xui8SN4mI+7egV/9dlfYYLGQJeEx4+DwmSQLwDVXJg=";
 /// let config = load_config("./app.yaml");
 /// assert!(config.is_ok());
 /// ```
-pub fn load_config(path: &str) -> Result<AppConfig, Box<dyn error::Error>> {
+pub fn load_config(path: &str) -> Result<(), Box<dyn error::Error>> {
     let content = read_to_string(&path)?;
     let config: AppConfig = serde_yaml::from_str(&content)?;
-    Ok(config)
+    GLOBAL_CONFIG.get_or_init(|| Arc::new(config));
+    Ok(())
+}
+
+/// 获取全局配置
+/// # Examples
+/// ```
+/// config = global_config()
+/// assert!(config.is_ok());
+/// ```
+pub fn global_config() -> Arc<AppConfig> {
+    let config = GLOBAL_CONFIG.get();
+    match config {
+        Some(config) => Arc::clone(config),
+        None => {
+            log::error!("configuration not initialized!");
+            panic!("configuration not initialized!")
+        }
+    }
 }
 
 /// 全局配置 结构
@@ -34,12 +54,32 @@ pub fn load_config(path: &str) -> Result<AppConfig, Box<dyn error::Error>> {
 pub struct AppConfig {
     pub env_name: String, // 环境名称: prod/stag/dev
     #[serde(default)]
+    pub token: Token, // 令牌配置
+    #[serde(default)]
     pub server: ServerConfig, // 服务配置
     pub mysql: Mysql,     // Mysql 数据库配置
     #[serde(default)]
     pub sqlite: Sqlite, // Sqlite3 数据库配置
     #[serde(default)]
     pub cors: AppCorsConfig, // 跨域配置
+}
+
+// 令牌配置
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct Token {
+    pub expire: i64,    // token 有效期，单位秒
+    pub secret: String, // JWT编码和解码的唯一调试秘密。
+    pub prefix: String, // 令牌前缀
+}
+
+impl Default for Token {
+    fn default() -> Token {
+        Token {
+            expire: 60 * 60 * 24,
+            secret: "8Xui8SN4mI+7egV/9dlfYYLGQJeEx4+DwmSQLwDVXJg=".to_string(),
+            prefix: "Token ".to_string(),
+        }
+    }
 }
 
 /// Mysql 数据库配置 结构
@@ -62,6 +102,16 @@ impl Mysql {
             "mysql://{}:{}@{}:{}/{}",
             self.user, self.password, self.host, self.port, self.db_name
         )
+    }
+    // diesel_mysql_pool db 连接配置
+    pub fn database_figment(&self) -> (String, HashMap<String, HashMap<String, String>>) {
+        let mut database_config = HashMap::new();
+        let database_url = self.dsn();
+        database_config.insert("url".to_string(), database_url);
+
+        let mut databases = HashMap::new();
+        databases.insert("mysql_pool".to_string(), database_config);
+        ("databases".to_string(), databases)
     }
 }
 
@@ -127,7 +177,7 @@ impl AppState {
     pub fn manage() -> AdHoc {
         AdHoc::on_ignite("Manage config", |rocket| async move {
             rocket.manage(AppState {
-                secret: SECRET.to_string().into_bytes(),
+                secret: "SECRET".to_string().into_bytes(),
             })
         })
     }
@@ -143,7 +193,7 @@ pub fn rocket_config(conf: &AppConfig) -> Figment {
     };
     let figment = Figment::from(provider)
         .merge(("address", &conf.server.address))
-        .merge(("port", conf.server.port));
+        .merge(("port", &conf.server.port));
     figment
 }
 

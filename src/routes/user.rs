@@ -1,70 +1,172 @@
-use crate::database::user::{NewUser, UserData};
-use crate::database::Conn as DbConn;
-use crate::models::user::User;
-
+use log;
 use rocket::serde::json::Json;
 use serde_json::{json, Value};
 
-// 获取全部用户
-#[get("/all")]
-pub fn get_all(conn: DbConn) -> Json<Value> {
+use crate::database::user::UserData;
+use crate::database::DbConn;
+use crate::models::user::{Login, RegisterUser, User};
+
+// 注册用户
+#[post("/user/register", format = "application/json", data = "<user>")]
+pub async fn register_user(db: DbConn, user: Json<RegisterUser>) -> Json<Value> {
+    let result = db
+        .run(move |conn| RegisterUser::register_user(user.into_inner(), conn))
+        .await;
+
+    if let Err(err) = result {
+        log::error!("注册用户失败, err: {}", err);
+        return Json(json!({
+            "code": 500,
+            "msg": "注册用户失败",
+            "data": Value::Null,
+        }));
+    }
     Json(json!({
-        "status": 200,
-        "result": User::get_all_users(&conn),
+        "code": 200,
+        "msg": "",
+        "data": result.unwrap(),
     }))
 }
 
-// 添加用户
-#[post("/newUser", format = "application/json", data = "<new_user>")]
-pub fn new_user(conn: DbConn, new_user: Json<NewUser>) -> Json<Value> {
+// 打印数据类型
+fn print_type_of<T>(_: &T) {
+    println!("=============={}", std::any::type_name::<T>())
+}
+
+// 用户登录
+#[post("/user/login", format = "application/json", data = "<user>")]
+pub async fn login(db: DbConn, user: Json<Login>) -> Json<Value> {
+    let result = db
+        .run(|conn| Login::login(user.into_inner(), conn).map_err(|e| e.to_string()))
+        .await;
+
+    if let Err(err) = result {
+        if &err.to_string() == "NotFound" {
+            log::error!("用户或密码错误, err: {:#?}", err);
+            return Json(json!({
+                "code": 500,
+                "msg": "用户或密码错误",
+                "data": Value::Null,
+            }));
+        }
+        log::error!("用户登录失败, err: {:#?}", err);
+        return Json(json!({
+            "code": 500,
+            "msg": "用户登录失败",
+            "data": Value::Null,
+        }));
+    }
     Json(json!({
-        "status": User::insert_user(new_user.into_inner(), &conn),
-        "result": User::get_all_users(&conn).first(),
+        "code": 200,
+        "msg": "",
+        "data": result.unwrap(),
+    }))
+}
+
+// 获取用户列表
+#[get("/all")]
+pub async fn get_all(db: DbConn) -> Json<Value> {
+    let result = db.run(move |conn| User::get_all_users(conn)).await;
+
+    if let Err(err) = result {
+        log::error!("获取用户列表失败, err: {}", err);
+        return Json(json!({
+            "code": 500,
+            "msg": "获取用户列表失败",
+            "data": Value::Null,
+        }));
+    }
+    Json(json!({
+        "code": 200,
+        "msg": "",
+        "data": result.unwrap(),
     }))
 }
 
 // 删除用户
 #[get("/delete/<user>")]
-pub fn delete_user(conn: DbConn, user: String) -> Json<Value> {
-    let status = User::delete_by_name(user, &conn);
+pub async fn delete_user(db: DbConn, user: String) -> Json<Value> {
+    let result = db.run(move |conn| User::delete_by_name(user, conn)).await;
 
+    if let Err(err) = result {
+        log::error!("删除用户失败, err: {}", err);
+        return Json(json!({
+            "code": 500,
+            "msg": "删除用户失败",
+            "data": Value::Null,
+        }));
+    }
     Json(json!({
-        "status": 200,
-        "result": status,
+        "code": 200,
+        "msg": "",
+        "data": result.unwrap(),
     }))
 }
 
 // 根据user更新phone
 #[get("/updateName/<user>/<phone>")]
-pub fn update_first_name(conn: DbConn, user: String, phone: String) -> Json<Value> {
-    let code = User::update_by_username(user, phone, &conn);
-    let message;
-    if code as i32 == 1 {
-        message = String::from("更新成功!")
-    } else {
-        message = String::from("更新失败!")
+pub async fn update_first_name(db: DbConn, user: String, phone: String) -> Json<Value> {
+    let result = db
+        .run(move |conn| User::update_by_username(user, phone, conn))
+        .await;
+
+    if let Err(err) = result {
+        log::error!("更新用户手机号码失败, err: {}", err);
+        return Json(json!({
+            "code": 500,
+            "msg": "更新用户手机号码失败",
+            "data": Value::Null,
+        }));
     }
+
     Json(json!({
-        "status": 200,
-        "code":code,
-        "message": message,
+        "code": 200,
+        "msg": "",
+        "data": result.unwrap(),
     }))
 }
 
 // 根据id更新指定字段
 #[post("/updateAll", format = "application/json", data = "<update_user>")]
-pub fn updateall(conn: DbConn, update_user: Json<User>) -> Json<Value> {
+pub async fn updateall(db: DbConn, update_user: Json<User>) -> Json<Value> {
+    let result = db
+        .run(move |conn| User::update_all(update_user.into_inner(), conn))
+        .await;
+
+    if let Err(err) = result {
+        log::error!("更新用户信息失败, err: {}", err);
+        return Json(json!({
+            "code": 500,
+            "msg": "更新用户信息失败",
+            "data": Value::Null,
+        }));
+    }
+
     Json(json!({
-        "status": User::update_all(update_user.into_inner(), &conn),
-        "result": "ok",
+       "code": 200,
+        "msg": "",
+        "data": result.unwrap(),
     }))
 }
 
 // 根据user获取数据
 #[post("/getUser", format = "application/json", data = "<user_data>")]
-pub fn find_user(conn: DbConn, user_data: Json<UserData>) -> Json<Value> {
+pub async fn find_user(db: DbConn, user_data: Json<UserData>) -> Json<Value> {
+    let result = db
+        .run(move |conn| User::get_user_by_username(user_data.into_inner(), conn))
+        .await;
+
+    if let Err(err) = result {
+        log::error!("查询用户信息失败, err: {}", err);
+        return Json(json!({
+            "code": 500,
+            "msg": "查询用户信息失败",
+            "data": Value::Null,
+        }));
+    }
     Json(json!({
-        "status": 200,
-        "result": User::get_user_by_username(user_data.into_inner(), &conn),
+       "code": 200,
+        "msg": "",
+        "data": result.unwrap(),
     }))
 }
