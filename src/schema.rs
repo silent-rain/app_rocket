@@ -1,3 +1,4 @@
+// 字段类型: https://docs.rs/diesel/latest/diesel/sql_types/index.html
 table! {
     user (id) {
         id -> Integer,
