@@ -28,11 +28,6 @@ pub async fn register_user(db: DbConn, user: Json<RegisterUser>) -> Json<Value> 
     }))
 }
 
-// 打印数据类型
-fn print_type_of<T>(_: &T) {
-    println!("=============={}", std::any::type_name::<T>())
-}
-
 // 用户登录
 #[post("/user/login", format = "application/json", data = "<user>")]
 pub async fn login(db: DbConn, user: Json<Login>) -> Json<Value> {
@@ -169,4 +164,20 @@ pub async fn find_user(db: DbConn, user_data: Json<UserData>) -> Json<Value> {
         "msg": "",
         "data": result.unwrap(),
     }))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // 打印数据类型
+    fn print_type_of<T>(_: &T) {
+        println!("=============={}", std::any::type_name::<T>())
+    }
+
+    #[test]
+    fn test_print_type() {
+        print_type_of(&"path".to_string());
+        assert!(true)
+    }
 }
