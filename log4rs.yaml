@@ -1,0 +1,36 @@
+# 检查配置文件变动的时间间隔
+refresh_rate: 30 seconds
+
+# appender 负责将日志收集到控制台或文件, 可配置多个
+appenders:
+  stdout:
+    kind: console
+    encoder:
+      # log 信息模式
+      # pattern: "{d} - {m}{n}"
+      pattern: "{d(%Y-%m-%d %H:%M:%S,%3f)} {h({l})} [{f}:{L}] - {m}{n}"
+
+  file:
+    kind: rolling_file # file/rolling_file
+    path: "log/log.log"
+    append: true # 追加模式, 即每次在已有文件末尾添加日志, 默认为 true
+    encoder:
+      # pattern: "{d} - {m}{n}"
+      kind: json
+    policy:
+      kind: compound # 默认值, 即使用所有 policy
+      trigger: # 当文件超过10mb 时触发 rotate
+        kind: size
+        limit: 50mb # mb/kb
+      roller: # rotate 类型
+        kind: fixed_window # delete/fixed_window
+        pattern: "log/log-{}.log" # 注意, 需要至少包含 "{}" 用于插入索引值
+        base: 0 # 压缩日志索引值起点
+        count: 30 # 最大保存压缩文件数
+
+# 对全局 log 进行配置
+root:
+  level: debug
+  appenders:
+    - stdout
+    - file
