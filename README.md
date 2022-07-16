@@ -7,7 +7,7 @@
 - [ ] rust-embed, 内嵌静态web页面访问/内嵌静态资源文件
 - [x] 多环境
 - [ ] 用户注册
-- [x] 用户登录
+- [ ] 用户登录 - 返回 token
 - [x] token 登录
 - [x] api token 授权
 
