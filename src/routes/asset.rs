@@ -8,7 +8,7 @@ use rust_embed::RustEmbed;
 
 use std::borrow::Cow;
 use std::ffi::OsStr;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 #[derive(Debug, RustEmbed)]
 #[folder = "web/dist/"]
