@@ -18,6 +18,7 @@ mod database;
 mod models;
 mod routes;
 mod schema;
+mod utils;
 
 // 服务
 pub fn server() -> Rocket<Build> {
