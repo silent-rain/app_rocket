@@ -1,8 +1,9 @@
 use diesel::prelude::ExpressionMethods;
 use diesel::query_dsl::{QueryDsl, RunQueryDsl};
+use diesel::Connection;
 use diesel::MysqlConnection;
 use diesel::QueryResult;
-
+use diesel::SqliteConnection;
 use serde::{Deserialize, Serialize};
 
 use crate::models::auth;

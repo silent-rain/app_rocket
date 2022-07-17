@@ -1,3 +1,5 @@
+use std::env;
+
 // 用于引入 diesel 中的宏
 #[macro_use]
 extern crate diesel;
@@ -19,8 +21,10 @@ mod schema;
 
 // 服务
 pub fn server() -> Rocket<Build> {
+    // 获取当前环境
+    let env_name = env::var("ENV_NAME").unwrap_or_else(|_| "prod".to_string());
     // 加载配置
-    if let Err(err) = config::load_config("./app.yaml") {
+    if let Err(err) = config::load_config(&format!("./app-{}.yaml", env_name)) {
         panic!("全局配置初始化失败! err: {}", err);
     }
     // 获取全局配置
