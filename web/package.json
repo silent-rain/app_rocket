@@ -12,7 +12,6 @@
     "preview": "yarn run build && vite preview ",
     "lint": "eslint --ext .js,.jsx,.vue,.ts,.tsx src",
     "lint:fix": "eslint --ext .js,.jsx,.vue,.ts,.tsx src --fix",
-    "prepare": "husky install",
     "test:unit": "vue-cli-service test:unit",
     "test:watchAll": "vue-cli-service test:unit --watchAll",
     "test:cov": "vue-cli-service test:unit --coverage",
@@ -45,7 +44,8 @@
     "vue-router": "4.0.12",
     "xlsx": "^0.18.5",
     "sortablejs": "1.15.0",
-    "splitpanes": "^3.1.1"
+    "splitpanes": "^3.1.1",
+    "crypto-js": "^4.1.1"
   },
   "devDependencies": {
     "@babel/eslint-parser": "7.16.3",
