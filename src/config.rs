@@ -1,16 +1,17 @@
 /*!配置文件
 */
+
+use std::collections::HashMap;
+use std::fs::read_to_string;
+use std::sync::Arc;
+use std::{env, error};
+
 use once_cell::sync::OnceCell;
 use rocket::fairing::AdHoc;
 use rocket::figment::Figment;
 use rocket::Config;
 use serde::{Deserialize, Serialize};
 use serde_yaml;
-
-use std::collections::HashMap;
-use std::error;
-use std::fs::read_to_string;
-use std::sync::Arc;
 
 /// js toISOString() in test suit can't handle chrono's default precision
 pub const DATE_FORMAT: &'static str = "%Y-%m-%dT%H:%M:%S%.3fZ";
@@ -52,16 +53,23 @@ pub fn global_config() -> Arc<AppConfig> {
 /// 全局配置 结构
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct AppConfig {
+    #[serde(rename = "env_name", default = "default_env_name")]
     pub env_name: String, // 环境名称: prod/stag/dev
     #[serde(default)]
     pub auth_token: AuthToken, // 令牌配置
     #[serde(default)]
     pub server: ServerConfig, // 服务配置
-    pub mysql: Mysql,     // Mysql 数据库配置
+    #[serde(default)]
+    pub mysql: Mysql, // Mysql 数据库配置
     #[serde(default)]
     pub sqlite: Sqlite, // Sqlite3 数据库配置
     #[serde(default)]
     pub cors: AppCorsConfig, // 跨域配置
+}
+
+// 默认环境配置
+fn default_env_name() -> String {
+    "dev".to_string()
 }
 
 // 令牌配置
@@ -97,6 +105,20 @@ pub struct Mysql {
     pub timeout_seconds: u64, // 连接超时时间单位秒
 }
 
+impl Default for Mysql {
+    fn default() -> Mysql {
+        Mysql {
+            host: "".to_string(),
+            port: 3306,
+            user: "".to_string(),
+            password: "".to_string(),
+            db_name: "".to_string(),
+            pool_min_idle: 8,
+            pool_max_open: 32,
+            timeout_seconds: 15,
+        }
+    }
+}
 impl Mysql {
     // 获取数据库 url
     pub fn dsn(&self) -> String {
@@ -212,7 +234,7 @@ mod tests {
 
     #[test]
     fn test_include_str() {
-        let yaml_str = include_str!("../app.yaml");
+        let yaml_str = include_str!("../app-dev.yaml");
         assert_ne!(yaml_str, "");
     }
 }
