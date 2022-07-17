@@ -2,9 +2,12 @@ use log;
 use rocket::serde::json::Json;
 use serde_json::{json, Value};
 
+use crate::config;
 use crate::database::user::UserData;
 use crate::database::DbConn;
+use crate::models::auth::Auth;
 use crate::models::user::{Login, RegisterUser, User};
+use crate::routes::APIResponse;
 
 // 注册用户
 #[post("/user/register", format = "application/json", data = "<user>")]
@@ -56,6 +59,26 @@ pub async fn login(db: DbConn, user: Json<Login>) -> Json<Value> {
         "msg": "",
         "data": result.unwrap(),
     }))
+}
+
+// 获取用户列表
+#[get("/user/info")]
+pub async fn get_user_info(auth: Auth, db: DbConn) -> APIResponse {
+    let conf = config::global_config();
+    // 更新 token, 用于持久登录
+    let mut token = "".to_string();
+    if conf.auth_token.keep_alive {
+        token = Auth::new(auth.id, auth.username).unwrap_or("".to_string());
+    }
+
+    let result = db
+        .run(move |conn| User::token_for_user(auth.id, token, conn))
+        .await;
+    if let Err(err) = result {
+        log::error!("获取用户信息失败, err: {}", err);
+        return APIResponse::build().code(500).msg("获取用户信息失败");
+    }
+    return APIResponse::build().code(200).data(json!(result.unwrap()));
 }
 
 // 获取用户列表
@@ -168,8 +191,6 @@ pub async fn find_user(db: DbConn, user_data: Json<UserData>) -> Json<Value> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
     // 打印数据类型
     fn print_type_of<T>(_: &T) {
         println!("=============={}", std::any::type_name::<T>())

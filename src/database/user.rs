@@ -28,7 +28,7 @@ impl RegisterUser {
 
 // 反馈用户认证信息 结构
 #[derive(Serialize)]
-pub struct UserAuth {
+pub struct UserProfile {
     pub id: i32,
     pub name: String,
     pub phone: String,
@@ -40,7 +40,7 @@ impl Login {
     pub fn login(
         user_: Login,
         conn: &MysqlConnection,
-    ) -> Result<UserAuth, Box<dyn std::error::Error>> {
+    ) -> Result<UserProfile, Box<dyn std::error::Error>> {
         // 获取用户信息
         let user = user::table
             .filter(user::phone.eq(user_.phone))
@@ -50,7 +50,7 @@ impl Login {
         // 获取 token
         let token: String = auth::Auth::new(user.id, user.name.clone())?;
 
-        Ok(UserAuth {
+        Ok(UserProfile {
             id: user.id,
             name: user.name,
             phone: user.phone,
@@ -66,6 +66,21 @@ pub struct UserData {
 }
 
 impl User {
+    // 通过 token 获取用户信息
+    pub fn token_for_user(
+        id: i32,
+        token: String,
+        conn: &MysqlConnection,
+    ) -> QueryResult<UserProfile> {
+        let user = user::table.filter(user::id.eq(id)).first::<User>(conn)?;
+        Ok(UserProfile {
+            id,
+            name: user.name,
+            phone: user.phone,
+            token: token,
+        })
+    }
+
     // 获取全部用户
     pub fn get_all_users(conn: &MysqlConnection) -> QueryResult<Vec<User>> {
         user_dsl.order(user::id.desc()).load::<User>(conn)

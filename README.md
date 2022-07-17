@@ -8,8 +8,10 @@
 - [x] 多环境
 - [ ] 用户注册
 - [ ] 用户登录 - 返回 token
-- [x] token 登录
-- [x] api token 授权
+  - [ ] token 获取用户信息
+  - [x] 用户密码加密/解密
+  - [ ] token 访问 API
+- [x] api token 对外授权
 
 
 ## 项目运行

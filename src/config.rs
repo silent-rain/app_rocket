@@ -54,7 +54,7 @@ pub fn global_config() -> Arc<AppConfig> {
 pub struct AppConfig {
     pub env_name: String, // 环境名称: prod/stag/dev
     #[serde(default)]
-    pub token: Token, // 令牌配置
+    pub auth_token: AuthToken, // 令牌配置
     #[serde(default)]
     pub server: ServerConfig, // 服务配置
     pub mysql: Mysql,     // Mysql 数据库配置
@@ -66,18 +66,20 @@ pub struct AppConfig {
 
 // 令牌配置
 #[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct Token {
-    pub expire: i64,    // token 有效期，单位秒
-    pub secret: String, // JWT编码和解码的唯一调试秘密。
-    pub prefix: String, // 令牌前缀
+pub struct AuthToken {
+    pub expire: i64,      // token 有效期，单位秒
+    pub secret: String,   // JWT编码和解码的唯一调试秘密。
+    pub prefix: String,   // 令牌前缀
+    pub keep_alive: bool, // 是否持久连接
 }
 
-impl Default for Token {
-    fn default() -> Token {
-        Token {
+impl Default for AuthToken {
+    fn default() -> AuthToken {
+        AuthToken {
             expire: 60 * 60 * 24,
             secret: "8Xui8SN4mI+7egV/9dlfYYLGQJeEx4+DwmSQLwDVXJg=".to_string(),
             prefix: "Token ".to_string(),
+            keep_alive: false,
         }
     }
 }

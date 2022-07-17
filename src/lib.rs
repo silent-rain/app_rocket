@@ -8,26 +8,14 @@ extern crate rocket_sync_db_pools;
 
 #[macro_use]
 extern crate rocket;
-
-use rocket::{
-    serde::json::{json, Value},
-    Build, Rocket,
-};
+use rocket::{Build, Rocket};
 
 mod config;
 mod database;
-mod errors;
+// mod errors;
 mod models;
 mod routes;
 mod schema;
-
-#[catch(404)]
-fn not_found() -> Value {
-    json!({
-        "status": "error",
-        "reason": "Resource was not found."
-    })
-}
 
 // 服务
 pub fn server() -> Rocket<Build> {
@@ -52,6 +40,7 @@ pub fn server() -> Rocket<Build> {
             routes![
                 routes::user::register_user,
                 routes::user::login,
+                routes::user::get_user_info,
                 routes::user::get_all,
                 routes::user::delete_user,
                 routes::user::update_first_name,
@@ -68,5 +57,16 @@ pub fn server() -> Rocket<Build> {
         .attach(database::DbConn::fairing())
         // .attach(cors_fairing())
         .attach(config::AppState::manage())
-        .register("/", catchers![not_found])
+        .register(
+            "/",
+            catchers![
+                routes::errors::bad_request_handler,
+                routes::errors::unauthorized_handler,
+                routes::errors::forbidden_handler,
+                routes::errors::not_found_handler,
+                routes::errors::internal_server_error_handler,
+                routes::errors::service_unavailable_handler,
+                routes::errors::default_catcher,
+            ],
+        )
 }

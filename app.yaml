@@ -24,3 +24,9 @@ cors: # cors 跨域配置
   cors_allow_origin: "*"
   cors_allow_methods: "*"
   cors_allow_headers: "*"
+
+auth_token: # Auth 令牌配置
+  expire: 300
+  secret: "8Xui8SN4mI+7egV/9dlfYYLGQJeEx4+DwmSQLwDVXJg="
+  prefix: "Token "
+  keep_alive: false
