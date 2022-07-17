@@ -21,8 +21,6 @@ dotenv = "0.15.0"
 validator = "0.14.0"
 validator_derive = "0.14.0"
 jsonwebtoken = "8.0.1"
-rand = "0.8.5"
-uuid = { version = "0.8.2", features = ["serde", "v4"] }
 base64 = "0.13.0"
 log = "0.4.16"
 log4rs = "1.0.0"
