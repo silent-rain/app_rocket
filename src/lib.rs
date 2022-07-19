@@ -40,6 +40,9 @@ pub fn server() -> Rocket<Build> {
     // rocket 配置
     let figment = config::rocket_config(&conf).merge(&pool);
     rocket::custom(figment)
+        .attach(routes::log_fairing::HttpLogger::default())
+        // .attach(routes::auth_fairing::req_demo())
+        // .attach(routes::auth_fairing::Counter::default())
         .mount(
             "/api/v1",
             routes![

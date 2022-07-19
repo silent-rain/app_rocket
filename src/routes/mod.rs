@@ -9,7 +9,9 @@ use std::convert::From;
 use std::io::Cursor;
 
 pub mod asset;
+pub mod auth_fairing;
 pub mod errors;
+pub mod log_fairing;
 pub mod user;
 
 // 响应返回 结构

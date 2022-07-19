@@ -49,6 +49,49 @@ cargo build --release
 CREATE DATABASE  `rocket` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
+- 用户表
+```
+CREATE TABLE users
+(
+    `id`       INT AUTO_INCREMENT COMMENT '用户ID',
+    `name`     VARCHAR(32)  NOT NULL COMMENT '姓名',
+    `gender`   TINYINT(1)   NOT NULL DEFAULT 1 COMMENT '性别: 0:女,1:男',
+    `age`      INT(11)      NOT NULL COMMENT '年龄',
+    `birth`    VARCHAR(20)  NULL COMMENT '出生日期',
+    `phone`    VARCHAR(20)  NOT NULL UNIQUE COMMENT '手机号码',
+    `email`    VARCHAR(50)  NULL COMMENT '邮件',
+    `password` VARCHAR(20)  NOT NULL DEFAULT '888888' COMMENT '密码',
+    `address`  VARCHAR(200) NULL COMMENT '居住地址',
+    `avatar`   VARCHAR(20)  NULL COMMENT '头像',
+    `status`   TINYINT(1)   NOT NULL DEFAULT 1 COMMENT '是否启用,0:禁用,1:启用',
+    `created`  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `updated`  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (`id`)
+) ENGINE = InnoDB
+  DEFAULT CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci
+    COMMENT '用户';
+```
+
+- 日志表
+```mysql
+CREATE TABLE req_rsp_logs
+(
+    `id`          INT AUTO_INCREMENT COMMENT '自增ID',
+    `user_id`     VARCHAR(10) DEFAULT NULL COMMENT '请求用户ID',
+    `method`      VARCHAR(10) NOT NULL COMMENT '请求方法',
+    `path`        VARCHAR(500) NOT NULL COMMENT '请求地址路径',
+    `query`       VARCHAR(500) COMMENT '请求参数',
+    `body`        VARCHAR(500) COMMENT '请求体/响应体',
+    `remote_addr` VARCHAR(64) NOT NULL COMMENT '请求IP',
+    `log_type`    VARCHAR(64) NOT NULL COMMENT '日志类型:req/rsp',
+    `created`     DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    PRIMARY KEY (`id`)
+) ENGINE = InnoDB
+  DEFAULT CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci
+    COMMENT '请求-响应日志表';
+```
 
 ## diesel 使用
 - 安装cli
@@ -112,10 +155,14 @@ down.sql
 DROP TABLE user;
 ```
 - schema migration
-
+```shell
+diesel migration run
+```
 
 ## 项目引用
 - [vue3-admin-plus](https://github.com/jzfai/vue3-admin-plus)
 - [RealWorld](https://github.com/gothinkster/realworld)
 - [rocket+diesel+mysql学习](https://www.jianshu.com/p/95452dbe343b)
 - [rust-embed](https://github.com/pyrossh/rust-embed)
+- [diesel mysql 字段类型](https://docs.rs/diesel/latest/diesel/sql_types/index.html)
+

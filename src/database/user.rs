@@ -8,14 +8,14 @@ use serde::{Deserialize, Serialize};
 
 use crate::models::auth;
 use crate::models::user::{Login, RegisterUser, User};
-use crate::schema::user;
-use crate::schema::user::dsl::user as user_dsl;
+use crate::schema::users;
+use crate::schema::users::dsl::users as users_dsl;
 
 // 注册用户
 impl RegisterUser {
     // 注册用户
     pub fn register_user(mut _user: RegisterUser, conn: &MysqlConnection) -> QueryResult<usize> {
-        diesel::insert_into(user::table)
+        diesel::insert_into(users::table)
             .values(&_user)
             .execute(conn)
     }
@@ -37,9 +37,9 @@ impl Login {
         conn: &MysqlConnection,
     ) -> Result<UserProfile, Box<dyn std::error::Error>> {
         // 获取用户信息
-        let user = user::table
-            .filter(user::phone.eq(user_.phone))
-            .filter(user::password.eq(user_.password))
+        let user = users::table
+            .filter(users::phone.eq(user_.phone))
+            .filter(users::password.eq(user_.password))
             .first::<User>(conn)?;
 
         // 获取 token
@@ -67,7 +67,7 @@ impl User {
         token: String,
         conn: &MysqlConnection,
     ) -> QueryResult<UserProfile> {
-        let user = user::table.filter(user::id.eq(id)).first::<User>(conn)?;
+        let user = users::table.filter(users::id.eq(id)).first::<User>(conn)?;
         Ok(UserProfile {
             id,
             name: user.name,
@@ -78,44 +78,46 @@ impl User {
 
     // 获取全部用户
     pub fn get_all_users(conn: &MysqlConnection) -> QueryResult<Vec<User>> {
-        user_dsl.order(user::id.desc()).load::<User>(conn)
+        users_dsl.order(users::id.desc()).load::<User>(conn)
     }
 
     // 根据user获取数据
-    pub fn get_user_by_username(user: UserData, conn: &MysqlConnection) -> QueryResult<Vec<User>> {
-        user_dsl.filter(user::name.eq(user.name)).load::<User>(conn)
+    pub fn get_user_by_username(user_: UserData, conn: &MysqlConnection) -> QueryResult<Vec<User>> {
+        users_dsl
+            .filter(users::name.eq(user_.name))
+            .load::<User>(conn)
     }
 
     // 根据user更新phone
     pub fn update_by_username(
-        user: String,
+        name: String,
         phone: String,
         conn: &MysqlConnection,
     ) -> QueryResult<usize> {
-        diesel::update(user_dsl.filter(user::name.eq(user)))
-            .set(user::phone.eq(phone))
+        diesel::update(users_dsl.filter(users::name.eq(name)))
+            .set(users::phone.eq(phone))
             .execute(conn)
     }
 
     // 根据id更新指定字段
-    pub fn update_all(user: User, conn: &MysqlConnection) -> QueryResult<usize> {
-        diesel::update(user_dsl.filter(user::id.eq(user.id)))
+    pub fn update_all(user_: User, conn: &MysqlConnection) -> QueryResult<usize> {
+        diesel::update(users_dsl.filter(users::id.eq(user_.id)))
             .set((
-                user::name.eq(user.name),
-                user::password.eq(user.password),
-                user::phone.eq(user.phone),
+                users::name.eq(user_.name),
+                users::password.eq(user_.password),
+                users::phone.eq(user_.phone),
             ))
             .execute(conn)
     }
 
     // 删除用户
-    pub fn delete_by_name(user: String, conn: &MysqlConnection) -> QueryResult<usize> {
-        diesel::delete(user_dsl.filter(user::name.eq(user))).execute(conn)
+    pub fn delete_by_name(name: String, conn: &MysqlConnection) -> QueryResult<usize> {
+        diesel::delete(users_dsl.filter(users::name.eq(name))).execute(conn)
     }
 
     // 根据 id 删除用户
     pub fn delete_by_id(id: i32, connection: &MysqlConnection) -> bool {
-        diesel::delete(user::table.find(id))
+        diesel::delete(users::table.find(id))
             .execute(connection)
             .is_ok()
     }

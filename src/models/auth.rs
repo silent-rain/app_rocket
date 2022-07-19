@@ -71,7 +71,7 @@ impl<'r> FromRequest<'r> for Auth {
 }
 
 /// 从请求的 headers 中获取 Auth 令牌
-fn extract_auth_from_request(req: &Request) -> Result<Auth, jwt::errors::Error> {
+pub fn extract_auth_from_request(req: &Request) -> Result<Auth, jwt::errors::Error> {
     let token = req
         .headers()
         .get_one("authorization")

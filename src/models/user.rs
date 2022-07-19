@@ -1,6 +1,7 @@
+use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 
-use crate::schema::user;
+use crate::schema::users;
 
 #[derive(Debug, Serialize, Deserialize, Queryable)]
 pub struct User {
@@ -15,13 +16,13 @@ pub struct User {
     pub address: Option<String>, // 居住地址
     pub avatar: Option<String>,  // 头像
     pub status: bool,            // 用户状态
-    pub created: String,         // 创建时间
-    pub updated: String,         // 更新时间
+    pub created: NaiveDateTime,  // 创建时间
+    pub updated: NaiveDateTime,  // 更新时间
 }
 
 // 注册用户 结构
 #[derive(Debug, Serialize, Deserialize, Insertable)]
-#[table_name = "user"]
+#[table_name = "users"]
 pub struct RegisterUser {
     #[serde(skip_deserializing)]
     id: i32,
@@ -31,8 +32,8 @@ pub struct RegisterUser {
     pub phone: String,
     pub password: String,
     pub status: bool,
-    pub created: String,
-    pub updated: String,
+    pub created: NaiveDateTime,
+    pub updated: NaiveDateTime,
 }
 
 // 用户登录 结构
