@@ -3,6 +3,7 @@
  *- 日志入库
  */
 use chrono::Local;
+use log;
 use rocket::fairing::{Fairing, Info, Kind};
 use rocket::request::Outcome;
 use rocket::{Data, Request, Response};
@@ -64,7 +65,7 @@ impl Fairing for HttpLogger {
             log_type: "req".to_string(),
             created,
         };
-
+        log::trace!("{:?}", log);
         // 数据入库
         let outcome = request.guard::<DbConn>().await;
         if let Outcome::Success(conn) = outcome {
@@ -111,7 +112,7 @@ impl Fairing for HttpLogger {
             log_type: "rsp".to_string(),
             created,
         };
-
+        log::trace!("{:?}", log);
         // 数据入库
         let outcome = request.guard::<DbConn>().await;
         if let Outcome::Success(conn) = outcome {
