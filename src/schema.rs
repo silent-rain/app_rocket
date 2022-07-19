@@ -1,4 +1,18 @@
 table! {
+    http_logs (id) {
+        id -> Integer,
+        user_id -> Nullable<Varchar>,
+        method -> Varchar,
+        path -> Varchar,
+        query -> Nullable<Varchar>,
+        body -> Nullable<Varchar>,
+        remote_addr -> Varchar,
+        log_type -> Varchar,
+        created -> Datetime,
+    }
+}
+
+table! {
     req_rsp_logs (id) {
         id -> Integer,
         user_id -> Nullable<Varchar>,
@@ -31,6 +45,7 @@ table! {
 }
 
 allow_tables_to_appear_in_same_query!(
+    http_logs,
     req_rsp_logs,
     users,
 );

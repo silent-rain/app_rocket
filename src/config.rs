@@ -2,9 +2,9 @@
 */
 
 use std::collections::HashMap;
+use std::error;
 use std::fs::read_to_string;
 use std::sync::Arc;
-use std::{env, error};
 
 use once_cell::sync::OnceCell;
 use rocket::fairing::AdHoc;

@@ -1,3 +1,3 @@
 pub mod auth;
-pub mod logs;
+pub mod http_logs;
 pub mod user;

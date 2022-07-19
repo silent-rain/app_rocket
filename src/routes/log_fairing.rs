@@ -1,12 +1,15 @@
 /*!网络请求/响应日志
+ *- 日志打印
  *- 日志入库
  */
 use chrono::Local;
 use rocket::fairing::{Fairing, Info, Kind};
+use rocket::request::Outcome;
 use rocket::{Data, Request, Response};
 
+use crate::database::DbConn;
 use crate::models::auth::extract_auth_from_request;
-use crate::models::logs::Logger;
+use crate::models::http_logs::Logger;
 
 // 网络请求/响应日志
 #[derive(Default)]
@@ -61,9 +64,13 @@ impl Fairing for HttpLogger {
             log_type: "req".to_string(),
             created,
         };
-        println!("req ==========={:?}", log);
 
         // 数据入库
+        let outcome = request.guard::<DbConn>().await;
+        if let Outcome::Success(conn) = outcome {
+            let result = conn.run(move |conn| Logger::insert(log, conn)).await;
+            println!("{:?}", result)
+        }
     }
 
     async fn on_response<'r>(&self, request: &'r Request<'_>, response: &mut Response<'r>) {
@@ -104,8 +111,12 @@ impl Fairing for HttpLogger {
             log_type: "rsp".to_string(),
             created,
         };
-        println!("rsp ==========={:?}", log);
 
         // 数据入库
+        let outcome = request.guard::<DbConn>().await;
+        if let Outcome::Success(conn) = outcome {
+            let result = conn.run(move |conn| Logger::insert(log, conn)).await;
+            println!("{:?}", result)
+        }
     }
 }

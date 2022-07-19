@@ -79,7 +79,7 @@ CREATE TABLE users
 
 - 日志表
 ```mysql
-CREATE TABLE req_rsp_logs
+CREATE TABLE http_logs
 (
     `id`          INT AUTO_INCREMENT COMMENT '自增ID',
     `user_id`     VARCHAR(10) DEFAULT NULL COMMENT '请求用户ID',
