@@ -1,0 +1,17 @@
+{
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Cargo Run",
+            "cargo": {
+                "args": [
+                    "run"
+                ]
+            },
+            "program": "${cargo:program}",
+            "args": [],
+            "console": "integratedTerminal",
+        }
+    ]
+}
