@@ -45,7 +45,7 @@ table! {
 table! {
     user_token (id) {
         id -> Integer,
-        user_id -> Nullable<Varchar>,
+        user_id -> Varchar,
         token -> Varchar,
         status -> Bool,
         created -> Datetime,
