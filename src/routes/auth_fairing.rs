@@ -13,13 +13,13 @@ pub fn req_demo() -> AdHoc {
     AdHoc::on_request("Put Rewriter", |req, data| {
         Box::pin(async move {
             // req.set_method(Method::Put);
-            // println!("{:#?}", req);
+            req.add_header(Header::new("X-Rocket-Id", "100001"));
+            println!("{:#?}", req);
+
+            // req.set
+
             println!("{:?}", req.headers().get_one("authorization"));
-            println!("{:?}", req.uri().path().url_decode());
-            println!("{:?}", req.limits().get("json").unwrap());
-            println!("{:?}", req.limits().get("form").unwrap());
-            // println!("{:?}", data.open(req.limits().get("json").unwrap()));
-            // println!("{:?}", data.open(2_i32.mebibytes()));
+            println!("{:?}", req.headers().get_one("X-Rocket-Id"));
             println!("{:?}", data.peek_complete());
         })
     })
@@ -31,7 +31,7 @@ use std::io::Cursor;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
 use rocket::fairing::{Fairing, Info, Kind};
-use rocket::http::{ContentType, Method, Status};
+use rocket::http::{ContentType, Cookie, Header, Method, Status};
 use rocket::{Data, Request, Response};
 
 #[derive(Default)]

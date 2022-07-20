@@ -8,6 +8,7 @@ use serde_json::Value;
 use std::convert::From;
 use std::io::Cursor;
 
+pub mod api_token_fairing;
 pub mod asset;
 pub mod auth_fairing;
 pub mod errors;

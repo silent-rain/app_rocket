@@ -15,7 +15,9 @@
   - [x] 日志打印
   - [x] 日志入库
 - [ ] 全局数据库实例 async
-- [ ] api token 对外授权
+- [ ] API Token 请求授权
+  - [ ] User Token 表
+  - [ ] Token API Auth 表
 
 
 ## 项目运行
@@ -95,6 +97,44 @@ CREATE TABLE http_logs
   DEFAULT CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_unicode_ci
     COMMENT '请求-响应日志表';
+```
+
+- 用户-Token信息表
+```mysql
+CREATE TABLE token_api_auth
+(
+    `id`              INT AUTO_INCREMENT COMMENT '自增ID',
+    `user_token_id`   INT(11)      NOT NULL COMMENT '用户Token表 ID',
+    `uri`             VARCHAR(200) NOT NULL COMMENT '请求地址路径',
+    `expire`          INT(20)      NOT NULL COMMENT '授权到期时间',
+    `status`          TINYINT(1)   NOT NULL DEFAULT 1 COMMENT '是否启用,0:禁用,1:启用',
+    `created`         DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `updated`         DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (`id`),
+    CONSTRAINT `token_api_auth_user_token_id` FOREIGN KEY (`user_token_id`) REFERENCES `user_token` (`id`) ON DELETE CASCADE
+) ENGINE = InnoDB
+  DEFAULT CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci
+    COMMENT 'API-Token鉴权表';
+```
+
+- API-Token鉴权表
+```mysql
+CREATE TABLE token_api_auth
+(
+    `id`              INT AUTO_INCREMENT COMMENT '自增ID',
+    `user_token_id`   VARCHAR(10)  NOT NULL COMMENT '用户Token表 ID',
+    `uri`             VARCHAR(200) NOT NULL COMMENT '请求地址路径',
+    `expire`          INT(20)     NOT NULL COMMENT '授权到期时间',
+    `status`          TINYINT(1)   NOT NULL DEFAULT 1 COMMENT '是否启用,0:禁用,1:启用',
+    `created`         DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `updated`         DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (`id`),
+    CONSTRAINT `token_api_auth_user_token_id` FOREIGN KEY (`id`) REFERENCES `user_token` (`id`) ON DELETE CASCADE
+) ENGINE = InnoDB
+  DEFAULT CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci
+    COMMENT 'API-Token鉴权表';
 ```
 
 ## diesel 使用
