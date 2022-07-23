@@ -2,37 +2,24 @@
  *
  */
 
-use rocket::data::ToByteUnit;
-use rocket::fairing::AdHoc;
-use rocket::tokio;
+use std::io::Cursor;
+use std::sync::atomic::{AtomicUsize, Ordering};
 
-const AUTH_WHITE_LIST: [&str; 2] = ["", ""];
+use rocket::fairing::{AdHoc, Fairing, Info, Kind};
+use rocket::http::{ContentType, Header, Method, Status};
+use rocket::{Data, Request, Response};
 
 // 全局请求 demo
 pub fn req_demo() -> AdHoc {
     AdHoc::on_request("Put Rewriter", |req, data| {
         Box::pin(async move {
-            // req.set_method(Method::Put);
             req.add_header(Header::new("X-Rocket-Id", "100001"));
             println!("{:#?}", req);
-
-            // req.set
-
             println!("{:?}", req.headers().get_one("authorization"));
             println!("{:?}", req.headers().get_one("X-Rocket-Id"));
-            println!("{:?}", data.peek_complete());
         })
     })
 }
-
-// FromData
-
-use std::io::Cursor;
-use std::sync::atomic::{AtomicUsize, Ordering};
-
-use rocket::fairing::{Fairing, Info, Kind};
-use rocket::http::{ContentType, Cookie, Header, Method, Status};
-use rocket::{Data, Request, Response};
 
 #[derive(Default)]
 pub(crate) struct Counter {

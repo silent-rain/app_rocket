@@ -117,13 +117,6 @@ impl User {
     pub fn delete_by_name(name: String, conn: &MysqlConnection) -> QueryResult<usize> {
         diesel::delete(users_dsl.filter(users::name.eq(name))).execute(conn)
     }
-
-    // 根据 id 删除用户
-    pub fn delete_by_id(id: i32, connection: &MysqlConnection) -> bool {
-        diesel::delete(users::table.find(id))
-            .execute(connection)
-            .is_ok()
-    }
 }
 
 #[cfg(test)]

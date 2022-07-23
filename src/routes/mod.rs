@@ -9,7 +9,7 @@ use std::convert::From;
 use std::io::Cursor;
 
 pub mod api_token_fairing;
-pub mod auth_fairing;
+pub mod demo_fairing;
 pub mod log_fairing;
 
 pub mod asset;
