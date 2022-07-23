@@ -2,6 +2,8 @@
  *- 日志打印
  *- 日志入库
  */
+use std::io::Cursor;
+
 use chrono::Local;
 use log;
 use rocket::fairing::{Fairing, Info, Kind};
@@ -69,8 +71,7 @@ impl Fairing for HttpLogger {
         // 数据入库
         let outcome = request.guard::<DbConn>().await;
         if let Outcome::Success(conn) = outcome {
-            let result = conn.run(move |conn| Logger::insert(log, conn)).await;
-            println!("{:?}", result)
+            let _result = conn.run(move |conn| Logger::insert(log, conn)).await;
         }
     }
 
@@ -96,10 +97,11 @@ impl Fairing for HttpLogger {
             user_id = Some(auth.id.to_string());
         }
 
-        let mut body = Some(String::from(""));
+        let mut body = String::from("");
         if let Ok(body_) = response.body_mut().to_string().await {
-            body = Some(body_.to_string());
+            body = body_.to_string();
         }
+        response.set_sized_body(body.len(), Cursor::new(body.clone()));
 
         let log = Logger {
             id: 0,
@@ -107,7 +109,7 @@ impl Fairing for HttpLogger {
             method: request.method().to_string(),
             path,
             query,
-            body,
+            body: Some(body),
             remote_addr,
             log_type: "rsp".to_string(),
             created,
@@ -116,8 +118,7 @@ impl Fairing for HttpLogger {
         // 数据入库
         let outcome = request.guard::<DbConn>().await;
         if let Outcome::Success(conn) = outcome {
-            let result = conn.run(move |conn| Logger::insert(log, conn)).await;
-            println!("{:?}", result)
+            let _result = conn.run(move |conn| Logger::insert(log, conn)).await;
         }
     }
 }
