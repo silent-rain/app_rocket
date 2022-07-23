@@ -85,7 +85,7 @@ pub async fn get_user_info(auth: Auth, db: DbConn) -> APIResponse {
 }
 
 // 获取用户列表
-#[get("/all")]
+#[get("/user/all")]
 pub async fn get_all(db: DbConn) -> Json<Value> {
     let result = db.run(move |conn| User::get_all_users(conn)).await;
 
@@ -125,7 +125,7 @@ pub async fn delete_user(db: DbConn, user: String) -> Json<Value> {
 }
 
 // 根据user更新phone
-#[get("/updateName/<user>/<phone>")]
+#[get("/update_name/<user>/<phone>")]
 pub async fn update_first_name(db: DbConn, user: String, phone: String) -> Json<Value> {
     let result = db
         .run(move |conn| User::update_by_username(user, phone, conn))
@@ -148,7 +148,7 @@ pub async fn update_first_name(db: DbConn, user: String, phone: String) -> Json<
 }
 
 // 根据id更新指定字段
-#[post("/updateAll", format = "application/json", data = "<update_user>")]
+#[post("/update_user_info", format = "application/json", data = "<update_user>")]
 pub async fn updateall(db: DbConn, update_user: Json<User>) -> Json<Value> {
     let result = db
         .run(move |conn| User::update_all(update_user.into_inner(), conn))
@@ -171,7 +171,7 @@ pub async fn updateall(db: DbConn, update_user: Json<User>) -> Json<Value> {
 }
 
 // 根据user获取数据
-#[post("/getUser", format = "application/json", data = "<user_data>")]
+#[post("/get_user", format = "application/json", data = "<user_data>")]
 pub async fn find_user(db: DbConn, user_data: Json<UserData>) -> Json<Value> {
     let result = db
         .run(move |conn| User::get_user_by_username(user_data.into_inner(), conn))

@@ -15,7 +15,7 @@
   - [x] 日志打印
   - [x] 日志入库
 - [ ] 全局数据库实例 async
-- [ ] API Token 请求授权
+- [x] API Token 请求授权
   - [x] User Token 表
   - [x] Token API Auth 表
 

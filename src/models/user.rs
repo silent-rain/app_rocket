@@ -32,8 +32,6 @@ pub struct RegisterUser {
     pub phone: String,
     pub password: String,
     pub status: bool,
-    pub created: NaiveDateTime,
-    pub updated: NaiveDateTime,
 }
 
 // 用户登录 结构
