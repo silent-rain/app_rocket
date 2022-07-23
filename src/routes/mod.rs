@@ -9,11 +9,14 @@ use std::convert::From;
 use std::io::Cursor;
 
 pub mod api_token_fairing;
-pub mod asset;
 pub mod auth_fairing;
-pub mod errors;
 pub mod log_fairing;
+
+pub mod asset;
+pub mod errors;
+pub mod token_api_auth;
 pub mod user;
+pub mod user_token;
 
 // 响应返回 结构
 #[derive(Debug, Serialize, Deserialize, Clone)]

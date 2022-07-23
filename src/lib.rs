@@ -42,20 +42,37 @@ pub fn server() -> Rocket<Build> {
     rocket::custom(figment)
         .attach(routes::api_token_fairing::ApiAuthToken::default()) // API Token 鉴权 fairing
         .attach(routes::log_fairing::HttpLogger::default()) // 日志 fairing
-        .attach(routes::auth_fairing::req_demo())
+        // .attach(routes::auth_fairing::req_demo())
         // .attach(routes::auth_fairing::Counter::default())
         .mount(
             "/api/v1",
             routes![
                 routes::user::register_user,
                 routes::user::login,
+                // token 管理
+                routes::user_token::get_all_token,
+                routes::user_token::get_token_info,
+                routes::user_token::add_token,
+                routes::user_token::update_token,
+                routes::user_token::delete_token,
+                // token API 管理
+                routes::token_api_auth::get_all_token_uri,
+                routes::token_api_auth::get_token_uri_list,
+                routes::token_api_auth::get_token_uri_info,
+                routes::token_api_auth::add_token_uri,
+                routes::token_api_auth::update_token_uri_status,
+                routes::token_api_auth::update_token_uri_expire,
+                routes::token_api_auth::delete_token_uri,
+                // 用户管理
                 routes::user::get_user_info,
                 routes::user::get_all,
                 routes::user::delete_user,
                 routes::user::update_first_name,
                 routes::user::updateall,
                 routes::user::find_user,
+                // web 页面
                 routes::asset::index,
+                // 静态资源
                 routes::asset::serve_embedded_file,
             ],
         )

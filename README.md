@@ -109,7 +109,8 @@ CREATE TABLE user_token
     `status`      TINYINT(1)  NOT NULL DEFAULT 1 COMMENT '是否启用,0:禁用,1:启用',
     `created`     DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `updated`     DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    UNIQUE  KEY `user_token_uni` (`user_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_unicode_ci
@@ -128,6 +129,7 @@ CREATE TABLE token_api_auth
     `created`         DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `updated`         DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`id`),
+    UNIQUE  KEY `token_api_auth_token_uri_uni` (`user_token_id`,`uri`),
     CONSTRAINT `token_api_auth_user_token_id` FOREIGN KEY (`user_token_id`) REFERENCES `user_token` (`id`) ON DELETE CASCADE
 ) ENGINE = InnoDB
   DEFAULT CHARACTER SET = utf8mb4

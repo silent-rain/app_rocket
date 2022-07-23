@@ -2,13 +2,13 @@
  *
  */
 
-use rocket::http::ContentType;
-use rocket::response::content::RawHtml;
-use rust_embed::RustEmbed;
-
 use std::borrow::Cow;
 use std::ffi::OsStr;
 use std::path::PathBuf;
+
+use rocket::http::ContentType;
+use rocket::response::content::RawHtml;
+use rust_embed::RustEmbed;
 
 #[derive(Debug, RustEmbed)]
 #[folder = "web/dist/"]
