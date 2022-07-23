@@ -14,7 +14,7 @@ use serde::{Deserialize, Serialize};
 use serde_yaml;
 
 /// js toISOString() in test suit can't handle chrono's default precision
-pub const DATE_FORMAT: &'static str = "%Y-%m-%dT%H:%M:%S%.3fZ";
+pub const DATE_FORMAT: &'static str = "%Y-%m-%d %H:%M:%S.%3f";
 
 // 全局配置对象
 static GLOBAL_CONFIG: OnceCell<Arc<AppConfig>> = OnceCell::new();

@@ -79,7 +79,7 @@ impl Fairing for ApiAuthToken {
 
             // 判断 授权是否过期
             let time_ = Local::now().naive_local();
-            if time_.timestamp_nanos() >= api_token_auth.expire as i64 {
+            if time_ >= api_token_auth.expire {
                 log::error!("Token 授权已过期, api_token: {}", api_token_auth.token);
                 return;
             }
@@ -96,7 +96,9 @@ impl Fairing for ApiAuthToken {
             }
             let conf = config::global_config();
             let secret = conf.auth_token.secret.clone();
-            let token = Auth::new(user_id.unwrap(), "".to_string()).make_token(&secret);
+            let token = Auth::new(user_id.unwrap(), "".to_string())
+                .with_exp(api_token_auth.expire.timestamp())
+                .make_token(&secret);
             if let Err(e) = token {
                 log::error!(
                     "Token 生成鉴权信息失败, api_token: {}, err: {}",

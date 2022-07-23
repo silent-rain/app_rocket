@@ -5,7 +5,7 @@
 /web/node_modules
 
 # sql
-migrations
+migrations/*
 
 # log
 log/*

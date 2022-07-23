@@ -17,7 +17,7 @@ table! {
         id -> Integer,
         user_token_id -> Integer,
         uri -> Varchar,
-        expire -> Integer,
+        expire -> Datetime,
         status -> Bool,
         created -> Datetime,
         updated -> Datetime,
