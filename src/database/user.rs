@@ -6,6 +6,7 @@ use diesel::QueryResult;
 use diesel::SqliteConnection;
 use serde::{Deserialize, Serialize};
 
+use crate::config;
 use crate::models::auth;
 use crate::models::user::{Login, RegisterUser, User};
 use crate::schema::users;
@@ -43,7 +44,9 @@ impl Login {
             .first::<User>(conn)?;
 
         // 获取 token
-        let token: String = auth::Auth::new(user.id, user.name.clone())?;
+        let conf = config::global_config();
+        let secret = conf.auth_token.secret.clone();
+        let token: String = auth::Auth::new(user.id, user.name.clone()).make_token(&secret)?;
 
         Ok(UserProfile {
             id: user.id,

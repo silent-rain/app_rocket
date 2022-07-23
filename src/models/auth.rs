@@ -22,19 +22,22 @@ pub struct Auth {
 
 impl Auth {
     // 生成 token
-    pub fn new(id: i32, username: String) -> Result<String, jwt::errors::Error> {
+    pub fn new(id: i32, username: String) -> Auth {
         let conf = config::global_config();
         let expire = conf.auth_token.expire;
-        let secret = &conf.auth_token.secret;
 
         let exp = Utc::now() + Duration::seconds(expire);
-        let auth = Auth {
+        Auth {
             id,
             username,
             exp: exp.timestamp(),
-        };
-        let token: String = auth.make_token(&secret)?;
-        Ok(token)
+        }
+    }
+
+    // 修改 exp
+    pub fn with_exp(mut self, exp: i64) -> Self {
+        self.exp = exp;
+        self
     }
 
     // user info 编码 token

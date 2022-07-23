@@ -9,6 +9,7 @@ use rocket::http::Header;
 use rocket::request::Outcome;
 use rocket::{Data, Request};
 
+use crate::config;
 use crate::database::DbConn;
 use crate::models::auth::Auth;
 use crate::models::token_api_auth::TokenApiAuth;
@@ -93,7 +94,9 @@ impl Fairing for ApiAuthToken {
                 );
                 return;
             }
-            let token = Auth::new(user_id.unwrap(), "".to_string());
+            let conf = config::global_config();
+            let secret = conf.auth_token.secret.clone();
+            let token = Auth::new(user_id.unwrap(), "".to_string()).make_token(&secret);
             if let Err(e) = token {
                 log::error!(
                     "Token 生成鉴权信息失败, api_token: {}, err: {}",

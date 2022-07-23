@@ -68,7 +68,10 @@ pub async fn get_user_info(auth: Auth, db: DbConn) -> APIResponse {
     // 更新 token, 用于持久登录
     let mut token = "".to_string();
     if conf.auth_token.keep_alive {
-        token = Auth::new(auth.id, auth.username).unwrap_or("".to_string());
+        let secret = conf.auth_token.secret.clone();
+        token = Auth::new(auth.id, auth.username)
+            .make_token(&secret)
+            .unwrap_or("".to_string());
     }
 
     let result = db
