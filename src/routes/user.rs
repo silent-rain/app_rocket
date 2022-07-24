@@ -1,3 +1,6 @@
+/*!
+ * 用户信息
+ */
 use log;
 use rocket::serde::json::Json;
 use serde_json::{json, Value};
@@ -148,7 +151,11 @@ pub async fn update_first_name(db: DbConn, user: String, phone: String) -> Json<
 }
 
 // 根据id更新指定字段
-#[post("/update_user_info", format = "application/json", data = "<update_user>")]
+#[post(
+    "/update_user_info",
+    format = "application/json",
+    data = "<update_user>"
+)]
 pub async fn updateall(db: DbConn, update_user: Json<User>) -> Json<Value> {
     let result = db
         .run(move |conn| User::update_all(update_user.into_inner(), conn))
