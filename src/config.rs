@@ -2,7 +2,6 @@
 */
 
 use std::collections::HashMap;
-use std::error;
 use std::fs::read_to_string;
 use std::sync::Arc;
 
@@ -12,6 +11,8 @@ use rocket::figment::Figment;
 use rocket::Config;
 use serde::{Deserialize, Serialize};
 use serde_yaml;
+
+use crate::result::ErrorKind;
 
 /// js toISOString() in test suit can't handle chrono's default precision
 pub const DATE_FORMAT: &'static str = "%Y-%m-%d %H:%M:%S.%3f";
@@ -26,7 +27,7 @@ static GLOBAL_CONFIG: OnceCell<Arc<AppConfig>> = OnceCell::new();
 /// let config = load_config("./app.yaml");
 /// assert!(config.is_ok());
 /// ```
-pub fn load_config(path: &str) -> Result<(), Box<dyn error::Error>> {
+pub fn load_config(path: &str) -> Result<(), ErrorKind> {
     let content = read_to_string(&path)?;
     let config: AppConfig = serde_yaml::from_str(&content)?;
     GLOBAL_CONFIG.get_or_init(|| Arc::new(config));

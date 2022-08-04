@@ -1,4 +1,4 @@
-/*!全局鉴权
+/*! 整罩流 demo
  *
  */
 
@@ -11,7 +11,7 @@ use rocket::{Data, Request, Response};
 
 // 全局请求 demo
 pub fn req_demo() -> AdHoc {
-    AdHoc::on_request("Put Rewriter", |req, data| {
+    AdHoc::on_request("Put Rewriter", |req, _data| {
         Box::pin(async move {
             req.add_header(Header::new("X-Rocket-Id", "100001"));
             println!("{:#?}", req);

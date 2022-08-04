@@ -10,6 +10,7 @@ use rocket::request::{self, FromRequest, Request};
 use serde::{Deserialize, Serialize};
 
 use crate::config;
+use crate::result::ErrorKind;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Auth {
@@ -50,7 +51,7 @@ impl Auth {
 
 #[rocket::async_trait]
 impl<'r> FromRequest<'r> for Auth {
-    type Error = Box<dyn std::error::Error>;
+    type Error = ErrorKind;
 
     /// 从 Authorization 头中提取 Auth 令牌。
     /// 从请求中解析 Auth 成功继续调用，失败则返回 530 错误。
@@ -59,15 +60,15 @@ impl<'r> FromRequest<'r> for Auth {
             Ok(auth) => Outcome::Success(auth),
             Err(e) if jwt::errors::ErrorKind::InvalidToken == *e.kind() => {
                 log::error!("{:?}", e);
-                Outcome::Failure((Status::new(10001), Box::new(e)))
+                Outcome::Failure((Status::new(10001), ErrorKind::JwtError(e)))
             }
             Err(e) if jwt::errors::ErrorKind::ExpiredSignature == *e.kind() => {
                 log::error!("{:?}", e);
-                Outcome::Failure((Status::new(10002), Box::new(e)))
+                Outcome::Failure((Status::new(10002), ErrorKind::JwtError(e)))
             }
             Err(e) => {
                 log::error!("{:?}", e);
-                Outcome::Failure((Status::Forbidden, Box::new(e)))
+                Outcome::Failure((Status::Forbidden, ErrorKind::JwtError(e)))
             }
         }
     }

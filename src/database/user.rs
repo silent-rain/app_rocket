@@ -10,6 +10,7 @@ use serde::{Deserialize, Serialize};
 use crate::config;
 use crate::models::auth;
 use crate::models::user::{Login, RegisterUser, User};
+use crate::result::ErrorKind;
 use crate::schema::users;
 use crate::schema::users::dsl::users as users_dsl;
 
@@ -34,15 +35,13 @@ pub struct UserProfile {
 
 impl Login {
     // 登录
-    pub fn login(
-        user_: Login,
-        conn: &MysqlConnection,
-    ) -> Result<UserProfile, Box<dyn std::error::Error>> {
+    pub fn login(user_: Login, conn: &MysqlConnection) -> Result<UserProfile, ErrorKind> {
         // 获取用户信息
         let user = users::table
             .filter(users::phone.eq(user_.phone))
             .filter(users::password.eq(user_.password))
-            .first::<User>(conn)?;
+            .first::<User>(conn)
+            .map_err(|e| ErrorKind::Other(Box::new(e)))?;
 
         // 获取 token
         let conf = config::global_config();

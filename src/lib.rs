@@ -16,6 +16,7 @@ mod config;
 mod database;
 // mod errors;
 mod models;
+mod result;
 mod routes;
 mod schema;
 mod utils;
