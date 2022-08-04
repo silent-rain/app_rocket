@@ -17,6 +17,9 @@ use crate::result::ErrorKind;
 /// js toISOString() in test suit can't handle chrono's default precision
 pub const DATE_FORMAT: &'static str = "%Y-%m-%d %H:%M:%S.%3f";
 
+/// 登录密码加密密匙
+pub const PASSWORD_SECRET: &'static str = "ix4En7l1Hau10aPq";
+
 // 全局配置对象
 static GLOBAL_CONFIG: OnceCell<Arc<AppConfig>> = OnceCell::new();
 

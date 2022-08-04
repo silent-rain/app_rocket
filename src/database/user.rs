@@ -13,11 +13,16 @@ use crate::models::user::{Login, RegisterUser, User};
 use crate::result::ErrorKind;
 use crate::schema::users;
 use crate::schema::users::dsl::users as users_dsl;
+use crate::utils::crypto_aes::encrypt;
 
 // 注册用户
 impl RegisterUser {
     // 注册用户
     pub fn register_user(mut _user: RegisterUser, conn: &MysqlConnection) -> QueryResult<usize> {
+        let key = config::PASSWORD_SECRET;
+        let password =
+            base64::encode(&encrypt(key.as_bytes(), &_user.password.as_bytes()).unwrap());
+        _user.password = password;
         diesel::insert_into(users::table)
             .values(&_user)
             .execute(conn)

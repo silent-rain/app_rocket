@@ -9,7 +9,7 @@ use crypto::buffer::{RefReadBuffer, RefWriteBuffer};
 
 /// 加密
 /// 16, 24, or 32 字节的 key 对应 KeySize128, KeySize192, or KeySize256
-fn encrypt(key: &[u8], text: &[u8]) -> Result<Vec<u8>, Box<dyn Error>> {
+pub fn encrypt(key: &[u8], text: &[u8]) -> Result<Vec<u8>, Box<dyn Error>> {
     let mut encrypt = crypto::aes::ecb_encryptor(KeySize128, key, PkcsPadding);
     let mut read_buffer = RefReadBuffer::new(text);
     let mut result = vec![0; text.len() * 4];
@@ -21,7 +21,8 @@ fn encrypt(key: &[u8], text: &[u8]) -> Result<Vec<u8>, Box<dyn Error>> {
 }
 
 /// 解密
-fn decrypt(key: &[u8], text: &[u8]) -> Result<Vec<u8>, Box<dyn Error>> {
+#[allow(dead_code)]
+pub fn decrypt(key: &[u8], text: &[u8]) -> Result<Vec<u8>, Box<dyn Error>> {
     let mut decrypt = crypto::aes::ecb_decryptor(KeySize128, key, PkcsPadding);
     let mut read_buffer = RefReadBuffer::new(text);
 
