@@ -42,7 +42,7 @@ pub fn server() -> Rocket<Build> {
     let figment = config::rocket_config(&conf).merge(&pool);
     rocket::custom(figment)
         .attach(routes::api_token_fairing::ApiAuthToken::default()) // API Token 鉴权 fairing
-        .attach(routes::log_fairing::HttpLogger::default()) // 日志 fairing
+        .attach(routes::log_fairing::HttpLogger::new()) // 日志 fairing
         // .attach(routes::demo_fairing::req_demo())
         // .attach(routes::demo_fairing::Counter::default())
         .mount(
