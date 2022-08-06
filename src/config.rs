@@ -197,6 +197,7 @@ impl Default for ServerConfig {
     }
 }
 
+// App 内部状态
 pub struct AppState {
     pub secret: Vec<u8>,
 }

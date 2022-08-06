@@ -84,11 +84,7 @@ async fn query_user_id_and_expire(
     let db_conn = match request.guard::<DbConn>().await {
         Outcome::Success(conn) => conn,
         _ => {
-            log::error!(
-                "URI 解析失败, api_token: {}, err: {}",
-                api_token.clone(),
-                "获取DB实例失败"
-            );
+            log::error!("获取DB实例失败, api_token: {}", api_token.clone());
             return None;
         }
     };

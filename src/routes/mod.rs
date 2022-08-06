@@ -8,9 +8,6 @@ use serde_json::Value;
 use std::convert::From;
 use std::io::Cursor;
 
-pub mod api_token_fairing;
-pub mod log_fairing;
-
 pub mod asset;
 pub mod errors;
 pub mod token_api_auth;
@@ -57,6 +54,11 @@ impl APIResponse {
     pub fn data(mut self, data: Value) -> APIResponse {
         self.data = data;
         self
+    }
+
+    // 转换为 String
+    pub fn to_string(&self) -> String {
+        serde_json::to_string(&self).map_or("".to_string(), |v| v)
     }
 }
 

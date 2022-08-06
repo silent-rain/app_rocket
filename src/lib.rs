@@ -14,7 +14,7 @@ use rocket::{Build, Rocket};
 
 mod config;
 mod database;
-// mod errors;
+mod fairing;
 mod models;
 mod result;
 mod routes;
@@ -31,20 +31,19 @@ pub fn server() -> Rocket<Build> {
     }
     // 获取全局配置
     let conf = config::global_config();
-    println!("conf: {:#?}", conf);
 
     // 数据库初始化
-    // let database_url = conf.mysql.dsn();
-    // let pool = database::init_pool(&database_url);
     let db_pool = conf.mysql.database_figment();
 
     // rocket 配置
     let figment = config::rocket_config(&conf).merge(&db_pool);
     rocket::custom(figment)
-        .attach(routes::api_token_fairing::ApiAuthToken::default()) // API Token 鉴权 fairing
-        .attach(routes::log_fairing::HttpLogger::new()) // 日志 fairing
-        // .attach(routes::demo_fairing::req_demo())
-        // .attach(routes::demo_fairing::Counter::default())
+        .attach(database::DbConn::fairing()) // 数据库
+        .attach(fairing::api_token::ApiAuthToken::default()) // API Token 鉴权
+        .attach(fairing::log::HttpLogger::new()) // 日志
+        .attach(fairing::rsp_auth::resp_auth()) // 鉴权验证
+        // .attach(cors_fairing())
+        .attach(config::AppState::manage()) // App 内部状态
         .mount(
             "/api/v1",
             routes![
@@ -81,9 +80,6 @@ pub fn server() -> Rocket<Build> {
             "/",
             routes![routes::asset::index, routes::asset::serve_embedded_file],
         )
-        .attach(database::DbConn::fairing())
-        // .attach(cors_fairing())
-        .attach(config::AppState::manage())
         .register(
             "/",
             catchers![

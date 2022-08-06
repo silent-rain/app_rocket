@@ -81,6 +81,11 @@ impl User {
         })
     }
 
+    // 通过用户 ID 获取用户信息
+    pub fn get_user_by_id(id: i32, conn: &DbConnection) -> QueryResult<User> {
+        users::table.filter(users::id.eq(id)).first::<User>(conn)
+    }
+
     // 获取全部用户
     pub fn get_all_users(conn: &DbConnection) -> QueryResult<Vec<User>> {
         users_dsl.order(users::id.desc()).load::<User>(conn)
