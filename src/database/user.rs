@@ -128,6 +128,8 @@ impl User {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
+
     #[test]
     fn test_vec_u8_to_string() {
         let s: String = [10u8, 20u8, 30u8]
@@ -144,5 +146,14 @@ mod tests {
         let b = "aGVsbG8gd29ybGQ=";
         assert_eq!(base64::encode(a), b);
         assert_eq!(a, &base64::decode(b).unwrap()[..]);
+    }
+
+    #[test]
+    fn test_login_password() {
+        let key = config::PASSWORD_SECRET;
+        let password = "888888";
+        let password = base64::encode(&encrypt(key.as_bytes(), password.as_bytes()).unwrap());
+        println!("encode password: {}", &password);
+        assert_eq!(password, "aWHB8nCtflaAgO57uMsaJA==");
     }
 }
