@@ -3,6 +3,7 @@
  */
 use std::io::Cursor;
 
+use once_cell::sync::Lazy;
 use rocket::fairing::AdHoc;
 use rocket::http::{ContentType, Status};
 use rocket::outcome::Outcome;
@@ -12,13 +13,27 @@ use crate::models::auth::extract_auth_from_request;
 use crate::models::user::User;
 use crate::routes::APIResponse;
 
+// 路由白名单
+const WHITE_LIST: Lazy<Vec<&str>> = Lazy::new(|| vec!["/user/register", "/user/login"]);
+
 /// 请求鉴权并阻止数据返回
 /// 由于 rocket fairing 的特性, on_request 无法阻止请求
 /// 因此这里采用 response 的方式进行阻止数据返回
 pub fn resp_auth() -> AdHoc {
     AdHoc::on_response("Request Auth", |request, response| {
         Box::pin(async move {
+            let path = request
+                .uri()
+                .path()
+                .url_decode()
+                .map_or(String::new(), |v| v.to_string());
+
             // 白名单
+            for &uri in WHITE_LIST.iter() {
+                if path == uri.to_string() {
+                    return;
+                }
+            }
 
             // 获取鉴权 header
             let authorization = match request.headers().get_one("authorization") {
