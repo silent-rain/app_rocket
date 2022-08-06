@@ -36,10 +36,10 @@ pub fn server() -> Rocket<Build> {
     // 数据库初始化
     // let database_url = conf.mysql.dsn();
     // let pool = database::init_pool(&database_url);
-    let pool = conf.mysql.database_figment();
+    let db_pool = conf.mysql.database_figment();
 
     // rocket 配置
-    let figment = config::rocket_config(&conf).merge(&pool);
+    let figment = config::rocket_config(&conf).merge(&db_pool);
     rocket::custom(figment)
         .attach(routes::api_token_fairing::ApiAuthToken::default()) // API Token 鉴权 fairing
         .attach(routes::log_fairing::HttpLogger::new()) // 日志 fairing

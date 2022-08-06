@@ -138,7 +138,7 @@ impl Mysql {
         database_config.insert("url".to_string(), database_url);
 
         let mut databases = HashMap::new();
-        databases.insert("mysql_pool".to_string(), database_config);
+        databases.insert("db_pool".to_string(), database_config);
         ("databases".to_string(), databases)
     }
 }

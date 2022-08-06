@@ -16,7 +16,7 @@ pub async fn get_all_token_uri(db: DbConn) -> APIResponse {
     if let Err(err) = result {
         log::error!("获取Token URI列表信息失败, err: {}", err);
         return APIResponse::build()
-            .code(500)
+            .code(0)
             .msg("获取Token URI列表信息失败");
     }
     APIResponse::build().code(200).data(json!(result.unwrap()))
@@ -32,7 +32,7 @@ pub async fn get_token_uri_list(db: DbConn, token_id: i32) -> APIResponse {
     if let Err(err) = result {
         log::error!("查询Token对应的URI列表失败, err: {}", err);
         return APIResponse::build()
-            .code(500)
+            .code(0)
             .msg("查询Token对应的URI列表失败");
     }
     APIResponse::build().code(200).data(json!(result.unwrap()))
@@ -50,7 +50,7 @@ pub async fn get_token_uri_info(db: DbConn, token_uri: Json<TokenUri>) -> APIRes
     if let Err(err) = result {
         log::error!("查询Token与URI对应的权限信息失败, err: {}", err);
         return APIResponse::build()
-            .code(500)
+            .code(0)
             .msg("查询Token与URI对应的权限信息失败");
     }
     APIResponse::build().code(200).data(json!(result.unwrap()))
@@ -65,7 +65,7 @@ pub async fn add_token_uri(db: DbConn, token_uri: Json<TokenApiAuthData>) -> API
 
     if let Err(err) = result {
         log::error!("Token URI信息添加失败, err: {}", err);
-        return APIResponse::build().code(500).msg("Token信息添加失败");
+        return APIResponse::build().code(0).msg("Token信息添加失败");
     }
     APIResponse::build().code(200).msg("Token URI信息添加成功")
 }
@@ -78,7 +78,7 @@ pub async fn update_token_uri_status(db: DbConn, token_uri: Json<TokenApiAuthDat
         .await;
     if let Err(err) = _result {
         log::error!("更新Token URI状态失败, err: {}", err);
-        return APIResponse::build().code(500).msg("更新Token URI状态失败");
+        return APIResponse::build().code(0).msg("更新Token URI状态失败");
     }
     APIResponse::build().code(200).msg("更新成功!")
 }
@@ -91,7 +91,7 @@ pub async fn update_token_uri_expire(db: DbConn, token_uri: Json<TokenApiAuthDat
         .await;
     if let Err(err) = _result {
         log::error!("更新Token URI状态失败, err: {}", err);
-        return APIResponse::build().code(500).msg("更新Token URI状态失败");
+        return APIResponse::build().code(0).msg("更新Token URI状态失败");
     }
     APIResponse::build().code(200).msg("更新成功!")
 }
@@ -104,7 +104,7 @@ pub async fn delete_token_uri(db: DbConn, id: i32) -> APIResponse {
         .await;
     if let Err(err) = _result {
         log::error!("删除Token URI失败, err: {}", err);
-        return APIResponse::build().code(500).msg("删除Token URI失败");
+        return APIResponse::build().code(0).msg("删除Token URI失败");
     }
     APIResponse::build().code(200).msg("删除成功")
 }

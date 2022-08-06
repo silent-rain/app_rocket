@@ -15,7 +15,7 @@ pub async fn get_all_token(db: DbConn) -> APIResponse {
     let result = db.run(move |conn| UserToken::get_all(conn)).await;
     if let Err(err) = result {
         log::error!("获取Token列表信息失败, err: {}", err);
-        return APIResponse::build().code(500).msg("获取Token列表信息失败");
+        return APIResponse::build().code(0).msg("获取Token列表信息失败");
     }
     APIResponse::build().code(200).data(json!(result.unwrap()))
 }
@@ -29,7 +29,7 @@ pub async fn get_token_info(db: DbConn, user_id: String) -> APIResponse {
 
     if let Err(err) = result {
         log::error!("查询Token信息失败, err: {}", err);
-        return APIResponse::build().code(500).msg("查询Token信息失败");
+        return APIResponse::build().code(0).msg("查询Token信息失败");
     }
     APIResponse::build().code(200).data(json!(result.unwrap()))
 }
@@ -46,7 +46,7 @@ pub async fn add_token(db: DbConn, mut user_token_: Json<UserTokenInsertOrQuery>
 
     if let Err(err) = result {
         log::error!("Token信息添加失败, err: {}", err);
-        return APIResponse::build().code(500).msg("Token信息添加失败");
+        return APIResponse::build().code(0).msg("Token信息添加失败");
     }
     APIResponse::build().code(200).msg("Token信息添加成功")
 }
@@ -59,7 +59,7 @@ pub async fn update_token(db: DbConn, user_token_: Json<UserTokenInsertOrQuery>)
         .await;
     if let Err(err) = _result {
         log::error!("更新Token状态失败, err: {}", err);
-        return APIResponse::build().code(500).msg("更新Token状态失败");
+        return APIResponse::build().code(0).msg("更新Token状态失败");
     }
     APIResponse::build().code(200).msg("更新成功!")
 }
@@ -72,7 +72,7 @@ pub async fn delete_token(db: DbConn, user_id: String) -> APIResponse {
         .await;
     if let Err(err) = _result {
         log::error!("删除Token失败, err: {}", err);
-        return APIResponse::build().code(500).msg("删除Token失败");
+        return APIResponse::build().code(0).msg("删除Token失败");
     }
     APIResponse::build().code(200).msg("删除成功")
 }

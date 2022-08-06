@@ -82,7 +82,7 @@ pub async fn get_user_info(auth: Auth, db: DbConn) -> APIResponse {
         .await;
     if let Err(err) = result {
         log::error!("获取用户信息失败, err: {}", err);
-        return APIResponse::build().code(500).msg("获取用户信息失败");
+        return APIResponse::build().code(0).msg("获取用户信息失败");
     }
     return APIResponse::build().code(200).data(json!(result.unwrap()));
 }
