@@ -210,4 +210,4 @@ diesel migration run
 - [rocket+diesel+mysql学习](https://www.jianshu.com/p/95452dbe343b)
 - [rust-embed](https://github.com/pyrossh/rust-embed)
 - [diesel mysql 字段类型](https://docs.rs/diesel/latest/diesel/sql_types/index.html)
-
+- [utoipa - Auto generated OpenAPI documentation](https://github.com/juhaku/utoipa)
