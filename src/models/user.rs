@@ -38,8 +38,10 @@ pub struct RegisterUser {
 }
 
 // 用户登录 结构
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Validate)]
 pub struct Login {
-    pub phone: String,
-    pub password: String,
+    #[validate(length(min = 11))]
+    pub phone: Option<String>,
+    #[validate(length(min = 6))]
+    pub password: Option<String>,
 }

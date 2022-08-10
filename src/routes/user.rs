@@ -9,8 +9,9 @@ use crate::config;
 use crate::database::user::UserData;
 use crate::database::DbConn;
 use crate::models::auth::Auth;
+use crate::models::response::APIResponse;
 use crate::models::user::{Login, RegisterUser, User};
-use crate::routes::APIResponse;
+use crate::models::validation;
 
 // 注册用户
 #[post("/user/register", format = "application/json", data = "<user>")]
@@ -28,20 +29,27 @@ pub async fn register_user(db: DbConn, user: Json<RegisterUser>) -> APIResponse 
 
 // 用户登录
 #[post("/user/login", format = "application/json", data = "<user>")]
-pub async fn login(db: DbConn, user: Json<Login>) -> APIResponse {
+pub async fn login(db: DbConn, user: Json<Login>) -> Result<APIResponse, APIResponse> {
+    let user = user.into_inner();
+    // 字段验证
+    let mut extractor = validation::FieldValidator::validate(&user);
+    let phone = extractor.extract("phone", user.phone);
+    let password = extractor.extract("password", user.password);
+    extractor.check()?;
+
     let result = db
-        .run(|conn| Login::login(user.into_inner(), conn).map_err(|e| e.to_string()))
+        .run(|conn| Login::login(phone, password, conn).map_err(|e| e.to_string()))
         .await;
 
     if let Err(err) = result {
         if &err.to_string() == "NotFound" {
             log::error!("用户或密码错误, err: {:#?}", err);
-            return APIResponse::build().code(0).msg("用户或密码错误");
+            return Ok(APIResponse::build().code(0).msg("用户或密码错误"));
         }
         log::error!("用户登录失败, err: {:#?}", err);
-        return APIResponse::build().code(0).msg("用户登录失败");
+        return Ok(APIResponse::build().code(0).msg("用户登录失败"));
     }
-    return APIResponse::build().code(200).data(json!(result.unwrap()));
+    return Ok(APIResponse::build().code(200).data(json!(result.unwrap())));
 }
 
 // 获取用户列表

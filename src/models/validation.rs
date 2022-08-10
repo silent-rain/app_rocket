@@ -1,11 +1,17 @@
+/*! 字段参数验证模块
+ *
+ */
 use rocket::http::Status;
 use rocket::request::Request;
 use rocket::response::status;
 use rocket::response::{self, Responder};
 use rocket::serde::json::{json, Json};
+use serde::Serialize;
 use validator::{Validate, ValidationError, ValidationErrors};
 
-#[derive(Debug)]
+use crate::models::response::APIResponse;
+
+#[derive(Debug, Serialize)]
 pub struct Errors {
     errors: ValidationErrors,
 }
@@ -14,6 +20,7 @@ pub type FieldName = &'static str;
 pub type FieldErrorCode = &'static str;
 
 impl Errors {
+    #[allow(dead_code)]
     pub fn new(errs: &[(FieldName, FieldErrorCode)]) -> Self {
         let mut errors = ValidationErrors::new();
         for (field, code) in errs {
@@ -65,14 +72,16 @@ impl FieldValidator {
     }
 
     /// Convenience method to trigger early returns with ? operator.
-    pub fn check(self) -> Result<(), Errors> {
+    pub fn check(self) -> Result<(), APIResponse> {
         if self.errors.is_empty() {
-            Ok(())
-        } else {
-            Err(Errors {
-                errors: self.errors,
-            })
+            return Ok(());
         }
+
+        let err_string = serde_json::to_string(&Errors {
+            errors: self.errors,
+        })
+        .map_or("".to_string(), |v| v);
+        Err(APIResponse::build().code(0).msg(&err_string))
     }
 
     pub fn extract<T>(&mut self, field_name: &'static str, field: Option<T>) -> T

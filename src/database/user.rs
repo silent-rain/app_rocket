@@ -41,11 +41,15 @@ pub struct UserProfile {
 
 impl Login {
     // 登录
-    pub fn login(user_: Login, conn: &DbConnection) -> Result<UserProfile, ErrorKind> {
+    pub fn login(
+        phone: String,
+        password: String,
+        conn: &DbConnection,
+    ) -> Result<UserProfile, ErrorKind> {
         // 获取用户信息
         let user = users::table
-            .filter(users::phone.eq(user_.phone))
-            .filter(users::password.eq(user_.password))
+            .filter(users::phone.eq(phone))
+            .filter(users::password.eq(password))
             .first::<User>(conn)
             .map_err(|e| ErrorKind::Other(Box::new(e)))?;
 

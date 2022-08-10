@@ -6,8 +6,8 @@ use rocket::serde::json::Json;
 use serde_json::json;
 
 use crate::database::DbConn;
+use crate::models::response::APIResponse;
 use crate::models::user_token::{MakeUserToken, UserToken, UserTokenInsertOrQuery};
-use crate::routes::APIResponse;
 
 // 获取所有 Token 列表
 #[get("/user_token/all")]

@@ -1,5 +1,9 @@
 use std::env;
 
+// 用于引入 validator 中的宏
+#[macro_use]
+extern crate validator_derive;
+
 // 用于引入 diesel 中的宏
 #[macro_use]
 extern crate diesel;

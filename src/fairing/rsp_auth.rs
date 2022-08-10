@@ -10,8 +10,8 @@ use rocket::outcome::Outcome;
 
 use crate::database::DbConn;
 use crate::models::auth::extract_auth_from_request;
+use crate::models::response::APIResponse;
 use crate::models::user::User;
-use crate::routes::APIResponse;
 
 // 路由白名单
 const WHITE_LIST: Lazy<Vec<&str>> = Lazy::new(|| vec!["/user/register", "/user/login"]);
