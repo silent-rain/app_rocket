@@ -16,6 +16,11 @@ use crate::routes;
 #[derive(Debug, Clone, Component)]
 struct Value {}
 
+/// utoipa::path
+/// https://docs.rs/utoipa/1.1.0/utoipa/attr.path.html
+/// 
+/// openapi
+/// https://docs.rs/utoipa/1.1.0/utoipa/derive.OpenApi.html
 #[derive(OpenApi)]
 #[openapi(
     handlers(
