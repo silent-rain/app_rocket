@@ -38,7 +38,15 @@ pub fn resp_auth() -> AdHoc {
             // 获取鉴权 header
             let authorization = match request.headers().get_one("authorization") {
                 Some(v) => v,
-                None => return,
+                None => {
+                    log::error!("获取 authorization 信息失败, authorization 不存在或鉴权信息无效");
+                    let body = APIResponse::build()
+                        .code(0)
+                        .msg("无效鉴权")
+                        .to_string();
+                    response.set_sized_body(body.len(), Cursor::new(body.clone()));
+                    return;
+                }
             };
 
             response.set_status(Status::Forbidden);

@@ -34,7 +34,10 @@ impl Fairing for ApiAuthToken {
         let api_token_header = request.headers().get_one("X-API-Token-Id");
         let api_token = match api_token_header {
             Some(header) => header.to_string(),
-            None => return,
+            None => {
+                log::trace!("X-API-Token-Id 不存在");
+                return;
+            }
         };
 
         // 获取请求 URI

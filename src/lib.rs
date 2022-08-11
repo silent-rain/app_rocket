@@ -46,10 +46,10 @@ pub fn server() -> Rocket<Build> {
     // rocket 配置
     let figment = config::rocket_config(&conf).merge(&db_pool);
     rocket::custom(figment)
-        .attach(database::DbConn::fairing()) // 数据库
         .attach(fairing::api_token::ApiAuthToken::default()) // API Token 鉴权
         .attach(fairing::log::HttpLogger::new()) // 日志
         .attach(fairing::rsp_auth::resp_auth()) // 鉴权验证
+        .attach(database::DbConn::fairing()) // 数据库
         // .attach(cors_fairing())
         .attach(config::AppState::manage()) // App 内部状态
         .mount(
