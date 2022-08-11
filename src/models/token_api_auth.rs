@@ -64,13 +64,6 @@ pub struct TokenApiAuthQuery {
     pub expire: NaiveDateTime,
 }
 
-// 用于查询 URI 权限信息
-#[derive(Debug, Serialize, Deserialize, Queryable)]
-pub struct TokenUri {
-    pub token: String,
-    pub uri: String,
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;

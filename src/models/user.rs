@@ -3,6 +3,7 @@
  */
 use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
+use utoipa::Component;
 
 use crate::schema::users;
 
@@ -24,7 +25,7 @@ pub struct User {
 }
 
 // 注册用户 结构
-#[derive(Debug, Serialize, Deserialize, Insertable)]
+#[derive(Debug, Serialize, Deserialize, Insertable, Component)]
 #[table_name = "users"]
 pub struct RegisterUser {
     #[serde(skip_deserializing)]

@@ -7,7 +7,7 @@ use serde_json::json;
 
 use crate::database::DbConn;
 use crate::models::response::APIResponse;
-use crate::models::token_api_auth::{TokenApiAuth, TokenApiAuthData, TokenUri};
+use crate::models::token_api_auth::{TokenApiAuth, TokenApiAuthData};
 
 // 获取所有 Token URI 列表
 #[get("/token_uri/all")]
@@ -39,12 +39,22 @@ pub async fn get_token_uri_list(db: DbConn, token_id: i32) -> APIResponse {
 }
 
 // 根据 token、uri, 查询token是否拥有权限及返回用户 ID
-#[get("/token_uri/info", data = "<token_uri>")]
-pub async fn get_token_uri_info(db: DbConn, token_uri: Json<TokenUri>) -> APIResponse {
+#[utoipa::path(
+    get,
+    path = "/token_uri/info",
+    responses(
+        (status = 200, description = "token uri found succesfully", body = APIResponse),
+        (status = 404, description = "token uri was not found")
+    ),
+    params(
+        ("token", description = "req token"),
+        ("uri", description = "req uri")
+    )
+)]
+#[get("/token_uri/info?<token>&<uri>")]
+pub async fn get_token_uri_info(db: DbConn, token: String, uri: String) -> APIResponse {
     let result = db
-        .run(move |conn| {
-            TokenApiAuth::get_user_id_by_token(token_uri.token.clone(), token_uri.uri.clone(), conn)
-        })
+        .run(move |conn| TokenApiAuth::get_user_id_by_token(token, uri, conn))
         .await;
 
     if let Err(err) = result {

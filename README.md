@@ -19,6 +19,8 @@
 - [x] API Token 请求授权
   - [x] User Token 表
   - [x] Token API Auth 表
+- [x] Auto Open API Doc
+- [ ] 前端登录
 
 
 ## 项目运行
@@ -211,3 +213,5 @@ diesel migration run
 - [rust-embed](https://github.com/pyrossh/rust-embed)
 - [diesel mysql 字段类型](https://docs.rs/diesel/latest/diesel/sql_types/index.html)
 - [utoipa - Auto generated OpenAPI documentation](https://github.com/juhaku/utoipa)
+- [Utoipa: 简单、快速、代码优先和编译时生成的Rust OpenAPI文档](https://www.5axxw.com/wiki/content/5wetxm)
+

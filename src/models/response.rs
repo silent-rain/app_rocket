@@ -8,11 +8,13 @@ use rocket::response::{self, Responder, Response};
 use serde::{Deserialize, Serialize};
 use serde_json;
 use serde_json::Value;
+use utoipa::Component;
+
 use std::convert::From;
 use std::io::Cursor;
 
 // 响应返回 结构
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Component)]
 pub struct APIResponse {
     code: u32,
     msg: String,

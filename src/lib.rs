@@ -15,6 +15,10 @@ extern crate rocket_sync_db_pools;
 #[macro_use]
 extern crate rocket;
 use rocket::{Build, Rocket};
+use utoipa_swagger_ui::SwaggerUi;
+
+// 用于引入 utoipa 中的宏
+use utoipa::OpenApi;
 
 mod config;
 mod database;
@@ -49,8 +53,17 @@ pub fn server() -> Rocket<Build> {
         // .attach(cors_fairing())
         .attach(config::AppState::manage()) // App 内部状态
         .mount(
+            // http://0.0.0.0:8000/swagger-ui/
+            "/",
+            SwaggerUi::new("/swagger-ui/<_..>").url(
+                "/api-doc/openapi.json",
+                models::open_api_doc::ApiDoc::openapi(),
+            ),
+        )
+        .mount(
             "/api/v1",
             routes![
+                // 注册、登录
                 routes::user::register_user,
                 routes::user::login,
                 // token 管理

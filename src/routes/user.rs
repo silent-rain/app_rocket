@@ -14,6 +14,12 @@ use crate::models::user::{Login, RegisterUser, User};
 use crate::models::validation;
 
 // 注册用户
+#[utoipa::path(
+    request_body = RegisterUser,
+    responses(
+    (status = 200, body = APIResponse, description = "register user")
+   ),
+)]
 #[post("/user/register", format = "application/json", data = "<user>")]
 pub async fn register_user(db: DbConn, user: Json<RegisterUser>) -> APIResponse {
     let result = db
@@ -88,7 +94,15 @@ pub async fn get_all(db: DbConn) -> APIResponse {
 }
 
 // 删除用户
-#[get("/delete/<user>")]
+#[utoipa::path(
+    responses(
+        (status = 200, description = "delete user")
+    ),
+    params(
+        ("user", description = "user name"),
+    )
+)]
+#[delete("/delete/<user>")]
 pub async fn delete_user(db: DbConn, user: String) -> APIResponse {
     let result = db.run(move |conn| User::delete_by_name(user, conn)).await;
 
@@ -100,7 +114,7 @@ pub async fn delete_user(db: DbConn, user: String) -> APIResponse {
 }
 
 // 根据user更新phone
-#[get("/update_name/<user>/<phone>")]
+#[put("/update_name/<user>/<phone>")]
 pub async fn update_first_name(db: DbConn, user: String, phone: String) -> APIResponse {
     let result = db
         .run(move |conn| User::update_by_username(user, phone, conn))
