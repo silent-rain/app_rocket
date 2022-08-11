@@ -49,6 +49,16 @@ cargo run --release
 # release 模式编译
 cargo build --release
 ```
+- 访问前端 WEB
+```
+# url
+http://0.0.0.0:8000/
+```
+- Open API Doc
+```
+# url
+http://0.0.0.0:8000/swagger-ui/
+```
 
 
 ## 数据库初始化
