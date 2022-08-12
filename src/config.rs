@@ -138,7 +138,7 @@ impl Mysql {
         database_config.insert("url".to_string(), database_url);
 
         let mut databases = HashMap::new();
-        databases.insert("db_pool".to_string(), database_config);
+        databases.insert("mysql_pool".to_string(), database_config);
         ("databases".to_string(), databases)
     }
 }
@@ -160,6 +160,18 @@ impl Default for Sqlite {
             pool_max_open: 32,
             timeout_seconds: 15,
         }
+    }
+}
+impl Sqlite {
+    // diesel_mysql_pool db 连接配置
+    pub fn database_figment(&self) -> (String, HashMap<String, HashMap<String, String>>) {
+        let mut database_config = HashMap::new();
+        let database_url = self.db_url.clone();
+        database_config.insert("url".to_string(), database_url);
+
+        let mut databases = HashMap::new();
+        databases.insert("sqlite_pool".to_string(), database_config);
+        ("databases".to_string(), databases)
     }
 }
 

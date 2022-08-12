@@ -40,16 +40,20 @@ pub fn server() -> Rocket<Build> {
     // 获取全局配置
     let conf = config::global_config();
 
-    // 数据库初始化
-    let db_pool = conf.mysql.database_figment();
+    // mysql 数据库初始化
+    let mysql_pool = conf.mysql.database_figment();
+    // sqlite 数据库初始化
+    let sqlite_pool = conf.sqlite.database_figment();
 
     // rocket 配置
-    let figment = config::rocket_config(&conf).merge(&db_pool);
+    let figment = config::rocket_config(&conf)
+        .merge(&mysql_pool)
+        .merge(&sqlite_pool);
     rocket::custom(figment)
         .attach(fairing::api_token::ApiAuthToken::default()) // API Token 鉴权
         .attach(fairing::log::HttpLogger::new()) // 日志
         .attach(fairing::rsp_auth::resp_auth()) // 鉴权验证
-        .attach(database::DbConn::fairing()) // 数据库
+        .attach(database::DbConn::fairing()) // mysql 数据库
         // .attach(cors_fairing())
         .attach(config::AppState::manage()) // App 内部状态
         .mount(
